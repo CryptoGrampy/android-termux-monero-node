@@ -125,6 +125,7 @@ The notifications will be automatically be updated every 15 minutes. The first n
 
 # TODO's:
 
+- [ ] Generate node install scripts automatically using Github Actions with env variables rather than copy-pasta'ing (error prone)
 - [ ] Ensure env variables can be altered safely (Monero-CLI directory definitely cannot currently)
 - [ ] Create Uninstaller
 - [ ] Implement QR code installer
