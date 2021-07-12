@@ -52,7 +52,7 @@ https://www.reddit.com/r/Monero/comments/ko0xd1/i_put_together_a_new_guide_for_r
 
 # Install
 
-Video Install Guide (Use the code linked [here](src/install.sh) rather than the Pastebin shown in the video): 
+Video Install Guide (Use the code linked [here](src/full-monero-node-install) rather than the Pastebin shown in the video): 
 
 [![Monero Full Node Install](https://img.youtube.com/vi/z46zAy-LoHE/0.jpg)](https://www.youtube.com/watch?v=z46zAy-LoHE)
 
@@ -99,7 +99,7 @@ Video Install Guide (Use the code linked [here](src/install.sh) rather than the 
 <img src="assets/termux-widget.jpeg" width="300">
 </center>
 
-5. Copy all of the code from --> [here](src/install.sh) <--, INCLUDING the parenthesis, open Termux, paste into the terminal, and press the return button on the on-screen keyboard. You will likely need to give Termux permission to do various things (add repos, etc) during the install.  Read what it's asking, type y and then press return.  
+5. Copy all of the code from --> [here](src/full-monero-node-install) <--, INCLUDING the parenthesis, open Termux, paste into the terminal, and press the return button on the on-screen keyboard. You will likely need to give Termux permission to do various things (add repos, etc) during the install.  Read what it's asking, type y and then press return.  
 
 6. SUCCESS!
 
