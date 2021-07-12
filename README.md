@@ -108,7 +108,7 @@ Video Install Guide (Use the code linked in this repo down below rather than the
   
 Copy the code (INCLUDING the parenthesis) from the links below based on the node type/storage available on your device. 
 
-| Installed Node Type | Available Storage Required | Code you need copy |
+| Installed Node Type | Available Storage Required | Code you need to copy |
 | --- | ----------- | --------|
 | Full Monero Node on microSD  | microSD with 128+ (ideally 256GB) | [full-monero-node-install](src/full-monero-node-install) |
 | Pruned Monero Node on Internal Storage  | 40-50GB+ Internal Storage | [pruned-monero-node-install-no-sd](src/pruned-monero-node-install-no-sd) |
