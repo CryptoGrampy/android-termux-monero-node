@@ -17,16 +17,16 @@ Run a Full Monero Node on Android using Termux
 - [WARNING...](#warning)
 - [Install](#install)
 - [Controls Overview](#controls-overview)
-- [Future TODO's:](#future-todos)
+- [TODO's:](#todos)
 - [Donate:](#donate)
 
 # Why
 
-The goal of this project is to give newbs a stupid-easy way to run an energy-efficient, full Monero node with decent defaults on an Android device.  This isn't meant for power users, people with extreme use cases, etc. If you're already that smart, you should just edit this code and use it however you like.
+The goal of this project is to give newbs a stupid-easy way to run an energy-efficient, full or pruned Monero node with decent defaults on an Android device.  This isn't meant for power users, people with extreme use cases, etc. If you're already that smart, you should just hack up my code and use it however you like.
 
 I'm running this on a phone that's plugged in most of the time, so I can't speak for battery life; I would assume that once you're fully synced, the battery usage will drop quite a bit.  
 
-Running a full Monero node allows you to connect CakeWallet or Monerujo to the node running in the device itself, rather than connecting to a remote node; this is a safer way of using Monero, and it alleviates network strain on the remote nodes. You should also be able to connect from other devices in your LAN
+Running a Monero node allows you to connect CakeWallet or Monerujo to the node running in the device itself, rather than connecting to a remote node; this is a safer way of using Monero, and it alleviates network strain on the remote nodes. You should also be able to connect from other devices in your LAN
 
 
 # Contributing to the Monero Network
@@ -45,7 +45,7 @@ https://www.reddit.com/r/Monero/comments/ko0xd1/i_put_together_a_new_guide_for_r
 
 1. Run this code AT YOUR OWN RISK and READ THE CODE (and feel free to reach out if you have any improvements 😜).
 
-2. You WILL lose data saved on your microSD card.  Backup before running this code.
+2. You WILL (likely) lose data saved on your microSD card.  Backup before running this code.
 
 3. If things go awry, delete all of the Termux apps you're about to install, and all will be back to normal.
 
@@ -59,7 +59,8 @@ Video Install Guide (Use the code linked [here](src/full-monero-node-install) ra
 1. Hardware Prep:
     - Android 7.0+ with ARMv8 CPU (Nearly all made in the last few years are fine) device with microSD slot.  
       - [Check your Android CPU 'Instruction Set' here](https://www.devicespecifications.com/en/model/f6cb274f)
-    - Freshly wiped 128GB (256GB+ Preferred) microSD set up in Android AS EXTERNAL STORAGE
+    - For Full Node:  Freshly wiped 128GB (256GB+ Preferred) microSD set up in Android AS EXTERNAL STORAGE
+    - For Pruned Node: at least 40-50 GB of internal storage (code for pruned node on microSD will be released in future updates)
 
  <center> 
   <figure>
@@ -99,7 +100,16 @@ Video Install Guide (Use the code linked [here](src/full-monero-node-install) ra
 <img src="assets/termux-widget.jpeg" width="300">
 </center>
 
-5. Copy all of the code from --> [here](src/full-monero-node-install) <--, INCLUDING the parenthesis, open Termux, paste into the terminal, and press the return button on the on-screen keyboard. You will likely need to give Termux permission to do various things (add repos, etc) during the install.  Read what it's asking, type y and then press return.  
+5. Install
+  
+Copy the code (INCLUDING the parenthesis) from the links below based on the node type/storage available on your device. 
+
+| Installed Node Type | Available Storage Required | Code you need copy |
+| --- | ----------- | --------|
+| Full Monero Node on microSD  | microSD with 128+ (ideally 256GB) | [full-monero-node-install](src/full-monero-node-install) |
+| Pruned Monero Node on Internal Storage  | 40-50GB+ | [pruned-monero-node-install-no-sd](src/pruned-monero-node-install-no-sd) |
+
+Open Termux, and paste the copied code into the terminal. Press the return button on the on-screen keyboard. You will likely need to give Termux permission to do various things (add repos, etc) during the install.  Read what it's asking, type y and then press return. 
 
 6. SUCCESS!
 
