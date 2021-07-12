@@ -61,7 +61,7 @@ Video Install Guide (Use the code linked in this repo down below rather than the
 [![Monero Full Node Install](https://img.youtube.com/vi/z46zAy-LoHE/0.jpg)](https://www.youtube.com/watch?v=z46zAy-LoHE)
 
 1. Hardware Prep:
-    - Android 7.0+ with ARMv8 CPU (Nearly all made in the last few years are fine) device with microSD slot.  
+    - Android 7.0+ with ARMv8 CPU (Nearly all made in the last few years are fine)
       - [Check your Android CPU 'Instruction Set' here](https://www.devicespecifications.com/en/model/f6cb274f)
     - For Full Node:  Freshly wiped 128GB (256GB+ Preferred) microSD set up in Android AS EXTERNAL STORAGE
     - For Pruned Node: at least 40-50 GB of available internal storage (code for pruned node on microSD will be released in future updates)
