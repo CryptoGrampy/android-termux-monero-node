@@ -109,8 +109,10 @@ Using the Termux Widget, you can 'Start XMR Node', 'Stop XMR Node', 'Update XMR 
 
 The notifications will be automatically be updated every 15 minutes. The first notification after restarting your device or starting turning your node on might not be 100% accurate as the Monero node can take a while to start up.  If you press the 'XMR Node Status' button in the Termux widget, you will briefly see the actual command line status of Monerod pop up in a Termux shell, and the Android notification will also update with the most recent node information (useful if you don't want to wait 15 minutes for an update)
 
-# Future TODO's:
+# TODO's:
 
+- [ ] Ensure env variables can be altered safely (Monero-CLI directory definitely cannot currently)
+- [ ] Create Uninstaller
 - [ ] Implement QR code installer
 - [ ] Turn off notifications and boot wake locks when user turns node off/add them back when node is turned on
 - [ ] Custom Configs
