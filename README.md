@@ -1,5 +1,5 @@
 # android-termux-monero-node
-Run a Full or Pruned Monero Node on Android using Termux
+Run a Full Monero Node on Android using Termux
 
 
 <center> 
@@ -22,7 +22,7 @@ Run a Full or Pruned Monero Node on Android using Termux
 
 # Why
 
-The goal of this project is to give newbs a stupid-easy way to run an energy-efficient, full or pruned Monero node with decent defaults on an Android device.... ideally, this is a few year old device that's currently sitting in a drawer doing nothing.  Why not set it up as a Monero node that sits at your house all day or you toss in a bag for making ultra-secure Monero transactions on the go?  This code and install process isn't meant for power users, people with extreme use cases, etc. If you're already that smart, you should just hack up my code and use it however you like.
+The goal of this project is to give newbs a stupid-easy way to run an energy-efficient, full Monero node with decent defaults on an Android device.... ideally, this is a few year old device that's currently sitting in a drawer doing nothing.  Why not set it up as a Monero node that sits at your house all day or you toss in a bag for making ultra-secure Monero transactions on the go?  This code and install process isn't meant for power users, people with extreme use cases, etc. If you're already that smart, you should just hack up my code and use it however you like.
 
 Battery Life- 
 I'm running this on a phone that's plugged in most of the time, so I can't speak for battery life; I would assume that once you're fully synced, the battery usage will drop quite a bit. 
@@ -47,7 +47,7 @@ https://www.reddit.com/r/Monero/comments/ko0xd1/i_put_together_a_new_guide_for_r
 
 # WARNING...
 
-1. Run this code AT YOUR OWN RISK and READ THE CODE (and feel free to reach out if you have any improvements 😜).
+1. DO NOT RUN THIS ON INTERNAL ANDROID STORAGE (use microSD ONLY) OR YOU IT WILL EVENTUALLY BURN OUT (Per Howard Chu) and Run this code AT YOUR OWN RISK and READ THE CODE (and feel free to reach out if you have any improvements 😜).  
 
 2. You WILL (likely) lose data saved on your microSD card.  Backup before running this code.
 
@@ -63,8 +63,7 @@ Video Install Guide (Use the code linked in this repo down below rather than the
 1. Hardware Prep:
     - Android 7.0+ with ARMv8 CPU (Nearly all made in the last few years are fine)
       - [Check your Android CPU 'Instruction Set' here](https://www.devicespecifications.com/en/model/f6cb274f)
-    - For Full Node:  Freshly wiped 128GB (256GB+ Preferred) microSD set up in Android AS EXTERNAL STORAGE
-    - For Pruned Node: at least 40-50 GB of available internal storage (code for pruned node on microSD will be released in future updates)
+    - Freshly wiped 128GB (256GB+ Preferred) microSD set up in Android AS EXTERNAL STORAGE
 
  <center> 
   <figure>
@@ -74,7 +73,7 @@ Video Install Guide (Use the code linked in this repo down below rather than the
 </center>
 
 
-2. Install Necessary Apps
+1. Install Necessary Apps
     - Install the Fdroid App Store (https://f-droid.org/)
     - Install these Apps from Fdroid (Do NOT install from Play store.  If any of these are already installed, uninstall them)
         - Termux
@@ -111,11 +110,10 @@ Copy the code (INCLUDING the parenthesis) from the links below based on the node
 | Installed Node Type | Available Storage Required | Code you need to copy |
 | --- | ----------- | --------|
 | Full Monero Node on microSD  | microSD with 128+ (ideally 256GB) | [full-monero-node-install](src/full-monero-node-install) |
-| Pruned Monero Node on Internal Storage  | 40-50GB+ Internal Storage | [pruned-monero-node-install-no-sd](src/pruned-monero-node-install-no-sd) |
 
 Open Termux, and paste the copied code into the terminal. Press the return button on the on-screen keyboard. You will likely need to give Termux permission to do various things (add repos, etc) during the install.  Read what it's asking, type y and then press return. 
 
-6. SUCCESS!
+1. SUCCESS!
 
 # Controls Overview
 
