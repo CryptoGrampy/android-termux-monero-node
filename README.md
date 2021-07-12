@@ -1,5 +1,5 @@
 # android-termux-monero-node
-Run a Full Monero Node on Android using Termux
+Run a Full or Pruned Monero Node on Android using Termux
 
 
 <center> 
@@ -60,7 +60,7 @@ Video Install Guide (Use the code linked [here](src/full-monero-node-install) ra
     - Android 7.0+ with ARMv8 CPU (Nearly all made in the last few years are fine) device with microSD slot.  
       - [Check your Android CPU 'Instruction Set' here](https://www.devicespecifications.com/en/model/f6cb274f)
     - For Full Node:  Freshly wiped 128GB (256GB+ Preferred) microSD set up in Android AS EXTERNAL STORAGE
-    - For Pruned Node: at least 40-50 GB of internal storage (code for pruned node on microSD will be released in future updates)
+    - For Pruned Node: at least 40-50 GB of available internal storage (code for pruned node on microSD will be released in future updates)
 
  <center> 
   <figure>
