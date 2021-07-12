@@ -49,9 +49,11 @@ https://www.reddit.com/r/Monero/comments/ko0xd1/i_put_together_a_new_guide_for_r
 
 1. DO NOT RUN THIS ON INTERNAL ANDROID STORAGE (use microSD ONLY) OR YOU IT WILL EVENTUALLY BURN OUT (Per Howard Chu) and Run this code AT YOUR OWN RISK and READ THE CODE (and feel free to reach out if you have any improvements 😜).  
 
-2. You WILL (likely) lose data saved on your microSD card.  Backup before running this code.
+2. MicroSD cards have a limited lifespan in general, and it's possible the card will burn out after a couple years, though I don't have solid metrics on this.  Monero is mostly writes and reads- not rewrites which are what kill storage the fastest.
 
-3. If things go awry, delete all of the Termux apps you're about to install, and all will be back to normal.
+3. You WILL (likely) lose data saved on your microSD card.  Backup before running this code.
+
+4. If things go awry, delete all of the Termux apps you're about to install, and all will be back to normal.
 
 
 # Install
