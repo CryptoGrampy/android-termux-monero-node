@@ -56,7 +56,7 @@ https://www.reddit.com/r/Monero/comments/ko0xd1/i_put_together_a_new_guide_for_r
 
 # Install
 
-Video Install Guide (Use the code linked [here](src/full-monero-node-install) rather than the Pastebin shown in the video): 
+Video Install Guide (Use the code linked in this repo down below rather than the Pastebin shown in the video): 
 
 [![Monero Full Node Install](https://img.youtube.com/vi/z46zAy-LoHE/0.jpg)](https://www.youtube.com/watch?v=z46zAy-LoHE)
 
