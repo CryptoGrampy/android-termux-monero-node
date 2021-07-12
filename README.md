@@ -24,7 +24,11 @@ Run a Full or Pruned Monero Node on Android using Termux
 
 The goal of this project is to give newbs a stupid-easy way to run an energy-efficient, full or pruned Monero node with decent defaults on an Android device.  This isn't meant for power users, people with extreme use cases, etc. If you're already that smart, you should just hack up my code and use it however you like.
 
-I'm running this on a phone that's plugged in most of the time, so I can't speak for battery life; I would assume that once you're fully synced, the battery usage will drop quite a bit.  
+Battery Life- 
+I'm running this on a phone that's plugged in most of the time, so I can't speak for battery life; I would assume that once you're fully synced, the battery usage will drop quite a bit. 
+
+Data Usage-
+No idea how much data Monero uses- you'll almost certainly want to be on WiFi while it's initially syncing, and turn off the node while out and about.  My node sits on a shelf next to my wifi router.  
 
 Running a Monero node allows you to connect CakeWallet or Monerujo to the node running in the device itself, rather than connecting to a remote node; this is a safer way of using Monero, and it alleviates network strain on the remote nodes. You should also be able to connect from other devices in your LAN
 
