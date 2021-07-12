@@ -107,7 +107,7 @@ Copy the code (INCLUDING the parenthesis) from the links below based on the node
 | Installed Node Type | Available Storage Required | Code you need copy |
 | --- | ----------- | --------|
 | Full Monero Node on microSD  | microSD with 128+ (ideally 256GB) | [full-monero-node-install](src/full-monero-node-install) |
-| Pruned Monero Node on Internal Storage  | 40-50GB+ | [pruned-monero-node-install-no-sd](src/pruned-monero-node-install-no-sd) |
+| Pruned Monero Node on Internal Storage  | 40-50GB+ Internal Storage | [pruned-monero-node-install-no-sd](src/pruned-monero-node-install-no-sd) |
 
 Open Termux, and paste the copied code into the terminal. Press the return button on the on-screen keyboard. You will likely need to give Termux permission to do various things (add repos, etc) during the install.  Read what it's asking, type y and then press return. 
 
