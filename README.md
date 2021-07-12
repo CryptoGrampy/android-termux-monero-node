@@ -22,7 +22,7 @@ Run a Full or Pruned Monero Node on Android using Termux
 
 # Why
 
-The goal of this project is to give newbs a stupid-easy way to run an energy-efficient, full or pruned Monero node with decent defaults on an Android device.  This isn't meant for power users, people with extreme use cases, etc. If you're already that smart, you should just hack up my code and use it however you like.
+The goal of this project is to give newbs a stupid-easy way to run an energy-efficient, full or pruned Monero node with decent defaults on an Android device.  Ideally a few year old device that's currently sitting in a drawer doing nothing.  Why not set it up as a Monero node that sits at your house all day or you toss in a bag for making ultra-secure Monero transactions on the go?  This code and install process isn't meant for power users, people with extreme use cases, etc. If you're already that smart, you should just hack up my code and use it however you like.
 
 Battery Life- 
 I'm running this on a phone that's plugged in most of the time, so I can't speak for battery life; I would assume that once you're fully synced, the battery usage will drop quite a bit. 
