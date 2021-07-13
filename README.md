@@ -16,6 +16,9 @@ Run a Full Monero Node on Android using Termux
 - [Contributing to the Monero Network](#contributing-to-the-monero-network)
 - [WARNING...](#warning)
 - [Install](#install)
+- [Connecting to your Node / Seeding the Network](#connecting-to-your-node--seeding-the-network)
+  - [Wallet Connections](#wallet-connections)
+  - [P2P Seeding](#p2p-seeding)
 - [Controls Overview](#controls-overview)
 - [TODO's:](#todos)
 - [Donate:](#donate)
@@ -107,15 +110,43 @@ Video Install Guide (Use the code linked in this repo down below rather than the
 
 5. Install
   
-Copy the code (INCLUDING the parenthesis) from the links below based on the node type/storage available on your device. 
+  Copy the code (INCLUDING the parenthesis) from the links below based on the node type/storage available on your device. 
 
-| Installed Node Type | Available Storage Required | Code you need to copy |
-| --- | ----------- | --------|
-| Full Monero Node on microSD  | microSD with 128+ (ideally 256GB) | [full-monero-node-install](src/full-monero-node-install) |
+  | Installed Node Type | Available Storage Required | Code you need to copy |
+  | --- | ----------- | --------|
+  | Full Monero Node on microSD  | microSD with 128+ (ideally 256GB) | [full-monero-node-install](src/full-monero-node-install) |
 
-Open Termux, and paste the copied code into the terminal. Press the return button on the on-screen keyboard. You will likely need to give Termux permission to do various things (add repos, etc) during the install.  Read what it's asking, type y and then press return. 
+  Open Termux, and paste the copied code into the terminal. Press the return button on the on-screen keyboard. You will likely need to give Termux permission to do various things (add repos, etc) during the install.  Read what it's asking, type y and then press return. 
 
-1. SUCCESS!
+6. SUCCESS!
+
+# Connecting to your Node / Seeding the Network
+
+There are a few ip addresses and ports you need to know when running a wallet on the Android device itself, when you're pointing ANOTHER device in your LOCAL network at your new full node, or when you're opening up your router to seed the network.
+
+## Wallet Connections
+
+NOTE:  YOU WILL NOT BE ABLE TO TRANSACT UNTIL YOUR NODE IS 100% SYNCED.  Continue using remote nodes/whatever you were using before in Cake or Monerujo until you're fully synced.  
+
+| Wallet Connection | IP (Why?) | Port (Why?) |
+| ---------------------------- | ----------- | --------|
+| Point CakeWallet/Monerujo Running on my Android at my XMR Node | 127.0.0.1 (This is Localhost!) | 18081 (Non-Remote RPC Port) |
+| Point an XMR wallet on another device on my local network at my XMR node | VARIES (check router for your local Android device IP) | 18089 (REMOTE RPC Port) |
+| Point an XMR wallet on another device OUTSIDE my local network at my node | Feature Not Available | Feature Not Available |
+
+
+If you're looking to go a little deeper, and understand why the above ip addresses/ports in the table are the way they are, this is the Monero startup command used in the script you ran.  You can look up what each of these items means in [this nice Monerod reference guide]([src/full-monero-node-install](https://monerodocs.org/interacting/monerod-reference/)) 
+
+```bash
+./monerod --data-dir $NODE_DATA --db-sync-mode safe:sync --enable-dns-blocklist --in-peers 10 --rpc-restricted-bind-ip 0.0.0.0 --rpc-restricted-bind-port 18089 --rpc-bind-ip 127.0.0.1 --rpc-bind-port 18081 --no-igd --no-zmq --detach
+```
+
+## P2P Seeding
+
+If you want to seed the Monero network in the same way you would seed a torrent, and YES, I do encourage this, in your router, you need to forward port 18080 (NOT 18081 and NOT 18089) to your Android device.  This process varies by router, but if you google 'port forwarding netgear (whatever your router brand is), you will find a guide.  
+
+Like magic, the P2P value in the Monero node notifications on your Android device will begin to tick up.  
+
 
 # Controls Overview
 
