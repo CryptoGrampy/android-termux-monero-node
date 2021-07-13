@@ -16,10 +16,10 @@ Run a Full Monero Node on Android using Termux
 - [Contributing to the Monero Network](#contributing-to-the-monero-network)
 - [WARNING...](#warning)
 - [Install](#install)
+- [Controls Overview](#controls-overview)
 - [Connecting to your Node / Seeding the Network](#connecting-to-your-node--seeding-the-network)
   - [Wallet Connections](#wallet-connections)
   - [P2P Seeding](#p2p-seeding)
-- [Controls Overview](#controls-overview)
 - [TODO's:](#todos)
 - [Donate:](#donate)
 
@@ -120,6 +120,12 @@ Video Install Guide (Use the code linked in this repo down below rather than the
 
 6. SUCCESS!
 
+# Controls Overview
+
+Using the Termux Widget, you can 'Start XMR Node', 'Stop XMR Node', 'Update XMR Node', and check the 'XMR Node Status'. Try them all- you're not going to break anything.  Tap the arrow in the Android Termux notification in your swipe-down Android notifications to see detailed info on your Node.  If a Monero update is available, it will be present in this notification. 
+
+The notifications will be automatically be updated every 15 minutes. The first notification after restarting your device or starting turning your node on might not be 100% accurate as the Monero node can take a while to start up.  If you press the 'XMR Node Status' button in the Termux widget, you will briefly see the actual command line status of Monerod pop up in a Termux shell, and the Android notification will also update with the most recent node information (useful if you don't want to wait 15 minutes for an update)
+
 # Connecting to your Node / Seeding the Network
 
 There are a few ip addresses and ports you need to know when running a wallet on the Android device itself, when you're pointing ANOTHER device in your LOCAL network at your new full node, or when you're opening up your router to seed the network.
@@ -157,13 +163,6 @@ For instance, this is how mine is setup:
 
 
 Once you've enabled port forwarding of 18080, like magic, the P2P value in the Monero node notifications on your Android device will begin to tick up in value.  You're helping the network.  
-
-
-# Controls Overview
-
-Using the Termux Widget, you can 'Start XMR Node', 'Stop XMR Node', 'Update XMR Node', and check the 'XMR Node Status'. Try them all- you're not going to break anything.  Tap the arrow in the Android Termux notification in your swipe-down Android notifications to see detailed info on your Node.  If a Monero update is available, it will be present in this notification. 
-
-The notifications will be automatically be updated every 15 minutes. The first notification after restarting your device or starting turning your node on might not be 100% accurate as the Monero node can take a while to start up.  If you press the 'XMR Node Status' button in the Termux widget, you will briefly see the actual command line status of Monerod pop up in a Termux shell, and the Android notification will also update with the most recent node information (useful if you don't want to wait 15 minutes for an update)
 
 # TODO's:
 
