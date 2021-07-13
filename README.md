@@ -162,7 +162,12 @@ For instance, this is how mine is setup:
 </center>
 
 
-Once you've enabled port forwarding of 18080, like magic, the P2P value in the Monero node notifications on your Android device will begin to tick up in value.  You're helping the network.  
+Once you've enabled port forwarding of 18080, like magic, the P2P value in the Monero node notifications on your Android device will begin to tick up in value.  You're helping the network. 
+
+If you decide, for whatever reason, that you want to stop seeding the network, simply stop forwarding port 18080 in your router/remove the port forwarding rule.  
+
+Troubleshooting:
+  - If P2P suddenly stops working for you, it's possible your router changed the port of your Android device (this is normal behavior for a router).  You will likely need to set up your Android device to use a 'static ip'... For this, Google 'static ip address android phone' or 'static ip address Netgear router' and figure out how to make your router always use the same ip internal ip address for your phone (Perhaps I'll add these instructions in the future)
 
 # TODO's:
 
