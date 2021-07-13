@@ -143,9 +143,20 @@ If you're looking to go a little deeper, and understand why the above ip address
 
 ## P2P Seeding
 
-If you want to seed the Monero network in the same way you would seed a torrent, and YES, I do encourage this, in your router, you need to forward port 18080 (NOT 18081 and NOT 18089) to your Android device.  This process varies by router, but if you google 'port forwarding netgear (whatever your router brand is), you will find a guide.  
+If you want to seed the Monero network in the same way you would seed a torrent, and YES, I do encourage this, in your router, you need to forward port 18080 (NOT 18081 and NOT 18089) to your Android device.  This process varies by router, but if you google 'port forwarding netgear (whatever your router brand is), you will find a guide.
 
-Like magic, the P2P value in the Monero node notifications on your Android device will begin to tick up.  
+For instance, this is how mine is setup: 
+
+<center> 
+<img src="assets/p2p-setup2.png" width="800">
+</center>
+
+<center> 
+<img src="assets/p2p-setup.png" width="800">
+</center>
+
+
+Once you've enabled port forwarding of 18080, like magic, the P2P value in the Monero node notifications on your Android device will begin to tick up in value.  You're helping the network.  
 
 
 # Controls Overview
