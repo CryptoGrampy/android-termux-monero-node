@@ -19,7 +19,7 @@ Run a Full Monero Node on Android using Termux
 - [Connecting to your Node / Seeding the Network](#connecting-to-your-node--seeding-the-network)
   - [Wallet Connections](#wallet-connections)
   - [P2P Seeding](#p2p-seeding)
-  - [Updates](#updates)
+- [Updates](#updates)
 - [TODO's:](#todos)
 - [Donate:](#donate)
 
@@ -171,7 +171,7 @@ If you decide, for whatever reason, that you want to stop seeding the network, s
 Troubleshooting:
   - If P2P suddenly stops working for you, it's possible your router changed the port of your Android device (this is normal behavior for a router).  You will likely need to set up your Android device to use a 'static ip'... For this, Google 'static ip address android phone' or 'static ip address Netgear router' and figure out how to make your router always use the same ip internal ip address for your phone (Perhaps I'll add these instructions in the future)
 
-## Updates
+# Updates
 
 - Termux Node Code:  If you find out that I've added an amazing new feature, and you want to update your code, simply copy the newly updated install script from Github and paste it into a Termux shell- it's the same process as the initial install.  I will do my best to take care of any cleanup activities that need to happen.  
 
