@@ -1,7 +1,6 @@
 # android-termux-monero-node
 Run a Full Monero Node on Android using Termux
 
-
 <center> 
 <figure>
 <img src="assets/notification.jpeg" width="400">
@@ -20,6 +19,7 @@ Run a Full Monero Node on Android using Termux
 - [Connecting to your Node / Seeding the Network](#connecting-to-your-node--seeding-the-network)
   - [Wallet Connections](#wallet-connections)
   - [P2P Seeding](#p2p-seeding)
+  - [Updates](#updates)
 - [TODO's:](#todos)
 - [Donate:](#donate)
 
@@ -171,13 +171,19 @@ If you decide, for whatever reason, that you want to stop seeding the network, s
 Troubleshooting:
   - If P2P suddenly stops working for you, it's possible your router changed the port of your Android device (this is normal behavior for a router).  You will likely need to set up your Android device to use a 'static ip'... For this, Google 'static ip address android phone' or 'static ip address Netgear router' and figure out how to make your router always use the same ip internal ip address for your phone (Perhaps I'll add these instructions in the future)
 
+## Updates
+
+- Termux Node Code:  If you find out that I've added an amazing new feature, and you want to update your code, simply copy the newly updated install script from Github and paste it into a Termux shell- it's the same process as the initial install.  I will do my best to take care of any cleanup activities that need to happen.  
+
+- Monero:  If you receive a notification that there is a new Monero version out (or perhaps you find out on Reddit, Twitter, etc), simply run the 'Update XMR Node' Termux shortcut through the Termux Widget.  
+
 # TODO's:
 
+- [x] Turn off notifications and boot wake locks when user turns node off/add them back when node is turned on
+- [ ] Add basic instructions for setting up a static IP for Android device
 - [ ] Generate node install scripts automatically using Github Actions with env variables rather than copy-pasta'ing (error prone)
 - [ ] Ensure env variables can be altered safely (Monero-CLI directory definitely cannot currently)
 - [ ] Create Uninstaller
-- [ ] Implement QR code installer
-- [ ] Turn off notifications and boot wake locks when user turns node off/add them back when node is turned on
 - [ ] Custom Configs
 - [ ] Check for external SD, if doesn't exist use different/symlinked install dir, check space before installing?/run as pruned
 - [ ] Secure RPC defaults
