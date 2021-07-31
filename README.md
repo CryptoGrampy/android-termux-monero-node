@@ -112,6 +112,8 @@ Video Install Guide (Use the code linked in this repo down below rather than the
   
   Copy the code (INCLUDING the parenthesis) from the links below based on the node type/storage available on your device. 
 
+  Make sure your screen stays 'on' throughout the install- give the screen a tap if necessary.
+
   | Installed Node Type | Available Storage Required | Code you need to copy |
   | --- | ----------- | --------|
   | Full Monero Node on microSD  | microSD with 128+ (ideally 256GB) | [full-monero-node-install](src/full-monero-node-install) |

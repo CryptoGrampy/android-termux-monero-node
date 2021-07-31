@@ -12,6 +12,10 @@ termux-wake-lock -y
 pkg update -y
 pkg install wget termux-api jq -y
 
+# Cleanup
+
+rm -f $TERMUX_BOOT/before_start_monero_node
+
 # Dirs
 
 mkdir -p $MONERO_CLI
@@ -26,9 +30,12 @@ cd $TERMUX_SHORTCUTS
 
   cat << EOF > Start\ XMR\ Node 
 #!/data/data/com.termux/files/usr/bin/sh
+termux-wake-lock
+
 cd $MONERO_CLI
 ./monerod --data-dir $NODE_DATA --db-sync-mode safe:sync --enable-dns-blocklist --in-peers 10 --rpc-restricted-bind-ip=0.0.0.0 --rpc-restricted-bind-port=18089 --rpc-bind-ip 127.0.0.1 --rpc-bind-port 18081 --no-igd --no-zmq --detach
 sleep 10
+cp $TERMUX_SHORTCUTS/Start\ XMR\ Node $TERMUX_BOOT
 termux-job-scheduler --job-id 1 -s $TERMUX_SCHEDULED/xmr_notifications --period-ms 900000
 EOF
 
@@ -36,6 +43,12 @@ EOF
 #!/data/data/com.termux/files/usr/bin/sh
 cd $MONERO_CLI
 ./monerod exit && tail --pid=$(pidof monerod) -f /dev/null && echo 'Exited' 
+rm -f $TERMUX_BOOT/Start\ XMR\ Node
+
+termux-wake-unlock
+termux-notification -i monero -c "🔴 XMR Node Offline" --priority low --alert-once
+termux-job-scheduler --cancel --job-id 1
+
 sleep 5
 EOF
 
@@ -49,6 +62,8 @@ cd $TERMUX_SCHEDULED
 EOF
 
  cat << "EOF" > xmr_notifications
+#!/data/data/com.termux/files/usr/bin/sh
+
 REQ=$(curl -s http://127.0.0.1:18081/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_info"}' -H 'Content-Type: application/json')
 
 if [ "$REQ" ]
@@ -70,11 +85,6 @@ NODE_ONLINE="🔴 XMR Node Offline"
 NOTIFICATION="RPC Error: Turn on your Node!"
 fi
 termux-notification -i monero -c "$NOTIFICATION"  -t "$NODE_ONLINE" --ongoing --priority low --alert-once
-EOF
-
- cat << EOF > $TERMUX_BOOT/before_start_monero_node
-#!/data/data/com.termux/files/usr/bin/sh
-termux-wake-lock
 EOF
 
   cat << EOF > Update\ XMR\ Node 
