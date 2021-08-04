@@ -116,7 +116,7 @@ Video Install Guide (Use the code linked in this repo down below rather than the
 
   | Installed Node Type | Available Storage Required | Code you need to copy |
   | --- | ----------- | --------|
-  | Full Monero Node on microSD  | microSD with 128+ (ideally 256GB) | [full-monero-node-install](src/full-monero-node-install) |
+  | Full Monero Node on microSD  | microSD with 128+ (ideally 256GB) | [full-monero-node-install](src/full-monero-node-external-sd-install.sh) |
 
   Open Termux, and paste the copied code into the terminal. Press the return button on the on-screen keyboard. You will likely need to give Termux permission to do various things (add repos, etc) during the install.  Read what it's asking, type y and then press return. 
 
