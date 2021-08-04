@@ -31,3 +31,10 @@ jobs:
           echo Generating Pruned Node External SD Script
           pwd
           sed -e 's/monerod --/monerod --prune-blockchain --/' src/full-monero-node-external-sd-install.sh > src/pruned-monero-node-external-sd-install.sh
+          
+      - name: Git Commit and Push
+        # You may pin to the exact commit or the version.
+        uses: github-actions-x/commit@v2.8
+        with:
+          # Github Token with commit access
+          github-token: ${{ secrets.ACTIONS_PUSH_SECRET }}
