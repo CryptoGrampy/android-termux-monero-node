@@ -29,5 +29,6 @@ jobs:
       - name: Run a multi-line script
         run: |
           echo Generating Pruned Node External SD Script
+          cd android-termux-monero-node
           pwd
           sed -e 's/monerod --/monerod --prune-blockchain --/' src/full-monersedo-node-external-sd-install.sh > src/pruned-monero-node-external-sd-install.sh
