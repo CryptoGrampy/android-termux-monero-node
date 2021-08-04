@@ -1,3 +1,5 @@
+#!/data/data/com.termux/files/usr/bin/sh
+
 (
 MONERO_CLI=~/monero-cli
 NODE_DATA=~/storage/external-1/bitmonero
