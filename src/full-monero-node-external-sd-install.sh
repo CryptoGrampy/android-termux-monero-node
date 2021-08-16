@@ -6,6 +6,26 @@ NODE_DATA=~/storage/external-1/bitmonero
 TERMUX_BOOT=~/.termux/boot
 TERMUX_SHORTCUTS=~/.shortcuts
 TERMUX_SCHEDULED=~/termux-scheduled
+URL_MONERO_CLI_ARM7=https://downloads.getmonero.org/cli/androidarm7
+URL_MONERO_CLI_ARM8=https://downloads.getmonero.org/cli/androidarm8
+
+# Detect Architecture
+
+getArch=$(getprop | grep "ro.product.cpu.abi")
+IN=$getArch
+arrIN=(${IN//:/ })
+getArch=${arrIN[1]}
+if [ $getArch == "[arm64-v8a]" ]
+then
+	URL_MONERO_CLI=$URL_MONERO_CLI_ARM8
+elif [ $getArch == "[armeabi-v7a]" ]
+then
+	URL_MONERO_CLI=$URL_MONERO_CLI_ARM7
+else
+	echo "Architecture incompatible: $getArch"
+	echo "Must be ARM7 or ARM8. Exiting script."
+	exit 0
+fi
 
 # Setup
 
@@ -93,7 +113,7 @@ EOF
 #!/data/data/com.termux/files/usr/bin/sh
 ./Stop\ XMR\ Node && echo "Monero Node Stopped"
 cd
-wget -O monero.tar.bzip2 https://downloads.getmonero.org/cli/androidarm8
+wget -O monero.tar.bzip2 $URL_MONERO_CLI
 tar jxvf monero.tar.bzip2
 rm monero.tar.bzip2
 rm -rf $MONERO_CLI
