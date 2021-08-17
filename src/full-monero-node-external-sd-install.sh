@@ -15,7 +15,8 @@ getArch=$(getprop | grep "ro.product.cpu.abi")
 IN=$getArch
 arrIN=(${IN//:/ })
 getArch=${arrIN[1]}
-if [ $getArch == "[arm64-v8a]" ]
+#if [ $getArch == "[arm64-v8a]" ]
+if [ $getArch == "[x86]" ]
 then
 	URL_MONERO_CLI=$URL_MONERO_CLI_ARM8
 elif [ $getArch == "[armeabi-v7a]" ]
@@ -50,10 +51,10 @@ mkdir -p $TERMUX_SCHEDULED
 
 cd $TERMUX_SHORTCUTS
 
+
   cat << EOF > Start\ XMR\ Node 
 #!/data/data/com.termux/files/usr/bin/sh
 termux-wake-lock
-
 cd $MONERO_CLI
 ./monerod --data-dir $NODE_DATA --db-sync-mode safe:sync --enable-dns-blocklist --in-peers 10 --rpc-restricted-bind-ip=0.0.0.0 --rpc-restricted-bind-port=18089 --rpc-bind-ip 127.0.0.1 --rpc-bind-port 18081 --no-igd --no-zmq --detach
 sleep 10
@@ -111,6 +112,7 @@ EOF
 
   cat << EOF > Update\ XMR\ Node 
 #!/data/data/com.termux/files/usr/bin/sh
+
 ./Stop\ XMR\ Node && echo "Monero Node Stopped"
 cd
 wget -O monero.tar.bzip2 $URL_MONERO_CLI
@@ -122,10 +124,39 @@ cd $TERMUX_SHORTCUTS
 ./Start\ XMR\ Node
 EOF
 
+  cat << EOF > Uninstall\ XMR\ Node
+#!/data/data/com.termux/files/usr/bin/sh
+RESP=\$(termux-dialog confirm -t "Uninstall XMR Node" -i "Do you wish to remove XMR node and all its associated files? (deleting the blockchain remains optional)" | jq '.text')
+#1 = Uninstall
+if [ \$RESP = '"yes"' ]
+then
+	echo "Uninstalling Monero Termux node"
+	cd $TERMUX_SHORTCUTS
+	./Stop\ XMR\ Node
+	rm -f Start\ XMR\ Node
+	rm -f Stop\ XMR\ Node
+	rm -f Update\ XMR\ Node
+	rm -f XMR\ Node\ Status
+	#Perhaps a config file is needed to set env variables for custom save locations (created on install)
+	rm -rf $MONERO_CLI
+	rm -f /termux-scheduled/xmr_notifications
+	RESP=\$(termux-dialog radio -t "Delete blockchain data?" -v "Yes,No" | jq '.index')
+	#1 = Uninstall
+	if [ \$RESP == 1 ]
+	then
+		rm -rf $NODE_DATA
+	fi
+	rm -rf Uninstall\ XMR\ Node
+	exit 0
+fi
+EOF
+
 chmod +x Start\ XMR\ Node
 chmod +x Stop\ XMR\ Node
 chmod +x Update\ XMR\ Node
+chmod +x XMR\ Node\ Status
 chmod +x xmr_notifications
+chmod +x Uninstall\ XMR\ Node 
 
 cp Start\ XMR\ Node $TERMUX_BOOT
 mv xmr_notifications $TERMUX_SCHEDULED
