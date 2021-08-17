@@ -15,8 +15,7 @@ getArch=$(getprop | grep "ro.product.cpu.abi")
 IN=$getArch
 arrIN=(${IN//:/ })
 getArch=${arrIN[1]}
-#if [ $getArch == "[arm64-v8a]" ]
-if [ $getArch == "[x86]" ]
+if [ $getArch == "[arm64-v8a]" ]
 then
 	URL_MONERO_CLI=$URL_MONERO_CLI_ARM8
 elif [ $getArch == "[armeabi-v7a]" ]
