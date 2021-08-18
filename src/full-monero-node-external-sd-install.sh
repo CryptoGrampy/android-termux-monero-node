@@ -8,24 +8,22 @@ TERMUX_SHORTCUTS=~/.shortcuts
 TERMUX_SCHEDULED=~/termux-scheduled
 URL_MONERO_CLI_ARM7=https://downloads.getmonero.org/cli/androidarm7
 URL_MONERO_CLI_ARM8=https://downloads.getmonero.org/cli/androidarm8
+URL_MONERO_CLI_x86_64=https://downloads.getmonero.org/cli/linux64
+URL_MONERO_CLI_i686=https://downloads.getmonero.org/cli/linux32
+
+AUTO_UPDATE=0
 
 # Detect Architecture
 
-getArch=$(getprop | grep "ro.product.cpu.abi")
-IN=$getArch
-arrIN=(${IN//:/ })
-getArch=${arrIN[1]}
-if [ $getArch == "[arm64-v8a]" ]
-then
-	URL_MONERO_CLI=$URL_MONERO_CLI_ARM8
-elif [ $getArch == "[armeabi-v7a]" ]
-then
-	URL_MONERO_CLI=$URL_MONERO_CLI_ARM7
-else
-	echo "Architecture incompatible: $getArch"
-	echo "Must be ARM7 or ARM8. Exiting script."
-	exit 0
-fi
+MONERO_URL=""
+case $(uname -m) in
+	#Running in an emulator (currently unsupported)
+	#x86_64) URL_MONERO_CLI=$URL_MONERO_CLI_x86_64 ;; 
+	#i686) URL_MONERO_CLI=$URL_MONERO_CLI_i686 ;;
+	arm | armv7l) URL_MONERO_CLI=$URL_MONERO_CLI_ARM7 ;;
+	aarch64_be | aarch64 | armv8b | armv8l) URL_MONERO_CLI=$URL_MONERO_CLI_ARM8 ;;
+	*) echo "Your device is not compatible- must be ARMv7 or v8"; exit 1 ;;
+esac
 
 # Setup
 
@@ -109,21 +107,54 @@ fi
 termux-notification -i monero -c "$NOTIFICATION"  -t "$NODE_ONLINE" --ongoing --priority low --alert-once
 EOF
 
-  cat << EOF > Update\ XMR\ Node 
+ cat << EOF > Update\ XMR\ Node
 #!/data/data/com.termux/files/usr/bin/sh
 
-./Stop\ XMR\ Node && echo "Monero Node Stopped"
-cd
-wget -O monero.tar.bzip2 $URL_MONERO_CLI
-tar jxvf monero.tar.bzip2
-rm monero.tar.bzip2
-rm -rf $MONERO_CLI
-mv monero-a* $MONERO_CLI
-cd $TERMUX_SHORTCUTS
-./Start\ XMR\ Node
+func_xmrnode_install(){
+	./Stop\ XMR\ Node && echo "Monero Node Stopped"
+	cd
+	wget -O monero.tar.bzip2 $URL_MONERO_CLI
+	tar jxvf monero.tar.bzip2
+	rm monero.tar.bzip2
+	rm -rf $MONERO_CLI
+	mv monero-a* $MONERO_CLI
+	cd $TERMUX_SHORTCUTS
+	./Start\ XMR\ Node
+}
+func_xmrnode_install_prompt(){
+	#Alert the user / confirm the update (many possibilities)
+	RESP=\$(termux-dialog confirm \
+	-t "Update XMR Node" \
+	-i "An update is available. Do you wish to install?" | jq '.text')
+	if [ \$RESP = '"yes"' ]
+	then
+		func_xmrnode_install
+	fi
+}
+
+REQ=\$(curl -s http://eeebox:18081/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_info"}' -H 'Content-Type: application/json')
+if [ "\$REQ" ]
+then
+	DATA=\$(echo \$REQ | jq '.result')
+	UPDATE_AVAIL=\$(echo \$DATA | jq '.update_available' )
+	if [ "\$UPDATE_AVAIL" = "true" ]
+	then
+		#Prompt user to update (currently hardcoded)
+		if [ $AUTO_UPDATE = 1 ]
+		then
+			func_xmrnode_install
+		else
+			func_xmrnode_install_prompt
+		fi
+	else
+		VERSION=\$(echo \$DATA | jq '.version')
+		echo "No updates available. Current version is the latest: \$VERSION"
+	fi
+fi
+
 EOF
 
-  cat << EOF > Uninstall\ XMR\ Node
+ cat << EOF > Uninstall\ XMR\ Node
 #!/data/data/com.termux/files/usr/bin/sh
 RESP=\$(termux-dialog confirm -t "Uninstall XMR Node" -i "Do you wish to remove XMR node and all its associated files? (deleting the blockchain remains optional)" | jq '.text')
 #1 = Uninstall
@@ -163,7 +194,15 @@ mv xmr_notifications $TERMUX_SCHEDULED
 # Start
 
 cd $TERMUX_SHORTCUTS
-./Update\ XMR\ Node
+./Stop\ XMR\ Node && echo "Monero Node Stopped"
+cd 
+wget -O monero.tar.bzip2 $URL_MONERO_CLI
+tar jxvf monero.tar.bzip2
+rm monero.tar.bzip2
+rm -rf $MONERO_CLI
+mv monero-a* $MONERO_CLI
+cd $TERMUX_SHORTCUTS
+./Start\ XMR\ Node
 
 echo "Done! 👍"
 )
