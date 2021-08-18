@@ -132,7 +132,7 @@ func_xmrnode_install_prompt(){
 	fi
 }
 
-REQ=\$(curl -s http://eeebox:18081/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_info"}' -H 'Content-Type: application/json')
+REQ=\$(curl -s http://127.0.0.1:18081/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_info"}' -H 'Content-Type: application/json')
 if [ "\$REQ" ]
 then
 	DATA=\$(echo \$REQ | jq '.result')
