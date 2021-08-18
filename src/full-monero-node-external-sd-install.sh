@@ -22,12 +22,29 @@ case $(uname -m) in
 	#i686) URL_MONERO_CLI=$URL_MONERO_CLI_i686 ;;
 	arm | armv7l) URL_MONERO_CLI=$URL_MONERO_CLI_ARM7 ;;
 	aarch64_be | aarch64 | armv8b | armv8l) URL_MONERO_CLI=$URL_MONERO_CLI_ARM8 ;;
-	*) echo "Your device is not compatible- must be ARMv7 or v8"; exit 1 ;;
+	*) termux-toast -g bottom "Your device is not compatible- must be ARMv7 or v8"; exit 1 ;;
 esac
 
 # Setup
 
 termux-setup-storage
+
+RESP=$(termux-dialog confirm -t "XMR Node" -i \
+"This script will install:
+
+	- Monero Node
+
+Make sure you have these installed already (via F-Droid):
+
+ 	- Termux Boot
+	- Termux Widget
+
+Do you wish to continue?" | jq '.text')
+if [ $RESP = '"no"' ]
+then
+	exit 1
+fi
+
 termux-wake-lock -y
 pkg update -y
 pkg install wget termux-api jq -y
@@ -57,6 +74,7 @@ cd $MONERO_CLI
 sleep 10
 cp $TERMUX_SHORTCUTS/Start\ XMR\ Node $TERMUX_BOOT
 termux-job-scheduler --job-id 1 -s $TERMUX_SCHEDULED/xmr_notifications --period-ms 900000
+termux-job-scheduler --job-id 2 -s $TERMUX_SCHEDULED/Update\ XMR\ Node --period-ms 86400000
 EOF
 
  cat << EOF > Stop\ XMR\ Node
@@ -68,6 +86,7 @@ rm -f $TERMUX_BOOT/Start\ XMR\ Node
 termux-wake-unlock
 termux-notification -i monero -c "🔴 XMR Node Offline" --priority low --alert-once
 termux-job-scheduler --cancel --job-id 1
+termux-job-scheduler --cancel --job-id 2
 
 sleep 5
 EOF
@@ -119,6 +138,7 @@ func_xmrnode_install(){
 	rm -rf $MONERO_CLI
 	mv monero-a* $MONERO_CLI
 	cd $TERMUX_SHORTCUTS
+	termux-toast -g bottom "Starting XMR Node.."
 	./Start\ XMR\ Node
 }
 func_xmrnode_install_prompt(){
@@ -148,7 +168,7 @@ then
 		fi
 	else
 		VERSION=\$(echo \$DATA | jq '.version')
-		echo "No updates available. Current version is the latest: \$VERSION"
+		termux-toast -g bottom "No updates available. Current version is the latest: \$VERSION"
 	fi
 fi
 
@@ -167,9 +187,13 @@ then
 	rm -f Stop\ XMR\ Node
 	rm -f Update\ XMR\ Node
 	rm -f XMR\ Node\ Status
+	#rm -f XMR\ Node\ IP
 	#Perhaps a config file is needed to set env variables for custom save locations (created on install)
 	rm -rf $MONERO_CLI
-	rm -f /termux-scheduled/xmr_notifications
+	cd $HOME/termux-scheduled
+	rm -f xmr_notifications
+	rm -f Update\ XMR\ Node
+	cd $HOME/.shortcuts
 	RESP=\$(termux-dialog radio -t "Delete blockchain data?" -v "Yes,No" | jq '.index')
 	#1 = Uninstall
 	if [ \$RESP == 1 ]
@@ -177,9 +201,14 @@ then
 		rm -rf $NODE_DATA
 	fi
 	rm -rf Uninstall\ XMR\ Node
-	exit 0
+	exit 1
 fi
 EOF
+
+# cat << EOF > XMR\ Node\ IP
+#!/data/data/com.termux/files/usr/bin/sh
+#TODO: let the user view the IP:PORT of the node easily
+#EOF
 
 chmod +x Start\ XMR\ Node
 chmod +x Stop\ XMR\ Node
@@ -190,6 +219,7 @@ chmod +x Uninstall\ XMR\ Node
 
 cp Start\ XMR\ Node $TERMUX_BOOT
 mv xmr_notifications $TERMUX_SCHEDULED
+cp Update\ XMR\ Node $TERMUX_SCHEDULED
 
 # Start
 
