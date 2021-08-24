@@ -23,7 +23,7 @@ esac
 termux-setup-storage
 
 RESP=$(termux-dialog confirm -t "XMR Node" -i \
-"This script will install the latest Monero Node software on your device.
+"This script will install the latest Monero Node software on your device
 
 Make sure you have these apps installed (via F-Droid) before proceeding:
 
@@ -166,6 +166,7 @@ then
 		termux-toast -g bottom "No updates available. Current version is the latest: \$VERSION"
 	fi
 else
+  echo "Your node is either offline or still starting up.  Try again in a few minutes."
   exit 1
 fi
 
