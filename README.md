@@ -179,14 +179,13 @@ Troubleshooting:
 
 # TODO's:
 
-- [x] Turn off notifications and boot wake locks when user turns node off/add them back when node is turned on
 - [ ] Add basic instructions for setting up a static IP for Android device
-- [ ] Generate node install scripts automatically using Github Actions with env variables rather than copy-pasta'ing (error prone)
 - [ ] Ensure env variables can be altered safely (Monero-CLI directory definitely cannot currently)
-- [ ] Create Uninstaller
 - [ ] Custom Configs
 - [ ] Check for external SD, if doesn't exist use different/symlinked install dir, check space before installing?/run as pruned
 - [ ] Secure RPC defaults
+- [x] Create Uninstaller
+- [x] Turn off notifications and boot wake locks when user turns node off/add them back when node is turned on
 
 # Donate:
 
