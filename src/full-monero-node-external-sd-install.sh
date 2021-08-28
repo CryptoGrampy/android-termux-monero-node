@@ -2,6 +2,8 @@
 
 (
 MONERO_CLI=~/monero-cli
+MONERO_CONFIG=~/.monero-config.json
+TMP=$(mktemp)
 NODE_DATA=~/storage/external-1/bitmonero
 TERMUX_BOOT=~/.termux/boot
 TERMUX_SHORTCUTS=~/.shortcuts
@@ -43,6 +45,19 @@ pkg install wget termux-api jq -y
 # Cleanup
 
 rm -f $TERMUX_BOOT/before_start_monero_node
+
+# Create / Merge Config
+
+if [ -f "$MONERO_CONFIG" ]; then
+  CURRENT_CONFIG=$(jq '.' "$MONERO_CONFIG")
+else
+	CURRENT_CONFIG="{}"
+fi
+
+DEFAULT_CONFIG="{}"
+
+# Replace dummy object with 'default' config.  Current goes 2nd to update default vals.
+echo '{"c":"baz","a":0}' $(cat "$CURRENT_CONFIG") | jq -s add > "$TMP" && mv "$TMP" $MONERO_CONFIG;
 
 # Dirs
 
