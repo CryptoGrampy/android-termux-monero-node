@@ -57,7 +57,7 @@ fi
 DEFAULT_CONFIG="{}"
 
 # Replace dummy object with 'default' config.  Current goes 2nd to update default vals.
-echo '{"c":"baz","a":0}' $(cat "$CURRENT_CONFIG") | jq -s add > "$TMP" && mv "$TMP" $MONERO_CONFIG;
+echo '{"c":"baz","a":0}' "$CURRENT_CONFIG" | jq -s add > "$TMP" && mv "$TMP" $MONERO_CONFIG;
 
 # Dirs
 
