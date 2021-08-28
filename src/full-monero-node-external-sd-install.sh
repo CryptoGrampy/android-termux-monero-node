@@ -51,13 +51,14 @@ rm -f $TERMUX_BOOT/before_start_monero_node
 if [ -f "$MONERO_CONFIG" ]; then
   CURRENT_CONFIG=$(jq '.' "$MONERO_CONFIG")
 else
-	CURRENT_CONFIG="{}"
+  CURRENT_CONFIG="{}"
 fi
+
+echo $CURRENT_CONFIG
 
 DEFAULT_CONFIG="{}"
 
-# Replace dummy object with 'default' config.  Current goes 2nd to update default vals.
-echo '{"c":"hey","a":0}' "$CURRENT_CONFIG" | jq -s add > "$TMP" && mv "$TMP" $MONERO_CONFIG;
+echo "$DEFAULT_CONFIG" "$CURRENT_CONFIG" | jq -s add > "$TMP" && mv "$TMP" $MONERO_CONFIG;
 
 # Dirs
 
