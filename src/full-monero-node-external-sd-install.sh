@@ -101,21 +101,22 @@ REQ=$(curl -s http://127.0.0.1:18081/json_rpc -d '{"jsonrpc":"2.0","id":"0","met
 
 if [ "$REQ" ]
 then
-DATA=$(echo $REQ | jq '.result')
-DATE=$(echo "$DATA" | jq '.start_time' | jq -r 'todate' )
-VERSION=$(echo "$DATA" | jq -r '.version' )
-NODE_ONLINE=$(echo "$DATA" | jq -r 'if .offline == false then "🟢 XMR Node Online" else "🔴 XMR Node Offline" end')
-OUTGOING_CONNECTIONS=$(echo "$DATA" | jq '.outgoing_connections_count' )
-P2P_CONNECTIONS=$(echo "$DATA" | jq '.incoming_connections_count' )
-RPC_CONNECTIONS=$(echo "$DATA" | jq '.rpc_connections_count' )
-UPDATE_AVAILABLE=$(echo "$DATA" | jq -r 'if .update_available == true then "📬️ XMR Update Available" else "" end' )
-SYNC_STATUS=$(printf %.1f $(echo "$DATA" | jq '(.height / .target_height)*100'))
-STORAGE_REMAINING=$(printf %.1f $(echo "$DATA" | jq '.free_space * 0.000000001'))
+	DATA=$(echo $REQ | jq '.result')
+	DATE=$(echo "$DATA" | jq '.start_time' | jq -r 'todate' )
+	VERSION=$(echo "$DATA" | jq -r '.version' )
+	NODE_ONLINE=$(echo "$DATA" | jq -r 'if .offline == false then "🟢 XMR Node Online" else "🔴 XMR Node Offline" end')
+	OUTGOING_CONNECTIONS=$(echo "$DATA" | jq '.outgoing_connections_count' )
+	P2P_CONNECTIONS=$(echo "$DATA" | jq '.incoming_connections_count' )
+	RPC_CONNECTIONS=$(echo "$DATA" | jq '.rpc_connections_count' )
+	UPDATE_AVAILABLE=$(echo "$DATA" | jq -r 'if .update_available == true then "📬️ XMR Update Available" else "" end' )
+	SYNC_STATUS=$(printf %.1f $(echo "$DATA" | jq '(.height / .target_height)*100'))
+	STORAGE_REMAINING=$(printf %.1f $(echo "$DATA" | jq '.free_space * 0.000000001'))
+	LOCAL_IP=$(echo $(termux-wifi-connectioninfo | jq '.ip') | tr -d '"')
 
-NOTIFICATION=$(printf '%s\n' "⛓️ XMR-$VERSION" "🕐️ Running Since: $DATE" "🔄 Sync Progress: $SYNC_STATUS %" "📤️ OUT: $OUTGOING_CONNECTIONS / 🌱 P2P: $P2P_CONNECTIONS / 📲 RPC: $RPC_CONNECTIONS" "💾 Free Space: $STORAGE_REMAINING GB" "$UPDATE_AVAILABLE")
+	NOTIFICATION=$(printf '%s\n' "⛓️ XMR-$VERSION" "🕐️ Running Since: $DATE" "🔄 Sync Progress: $SYNC_STATUS %" "📤️ OUT: $OUTGOING_CONNECTIONS / 🌱 P2P: $P2P_CONNECTIONS / 📲 RPC: $RPC_CONNECTIONS" "💾 Free Space: $STORAGE_REMAINING GB" "$UPDATE_AVAILABLE" "🔌 Local IP: ${LOCAL_IP}:18089")
 else
-NODE_ONLINE="🔴 XMR Node Offline"
-NOTIFICATION="RPC Error: Turn on your Node!"
+	NODE_ONLINE="🔴 XMR Node Offline"
+	NOTIFICATION="RPC Error: Turn on your Node!"
 fi
 termux-notification -i monero -c "$NOTIFICATION"  -t "$NODE_ONLINE" --ongoing --priority low --alert-once
 EOF
