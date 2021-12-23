@@ -110,6 +110,19 @@ EOF
 # Create Scripts
 cd $TERMUX_SHORTCUTS
 
+  cat << EOF > Start\ XMR\ Node\ FG
+#!/data/data/com.termux/files/usr/bin/sh
+termux-wake-lock
+cp $TERMUX_SHORTCUTS/Start\ XMR\ Node $TERMUX_BOOT
+termux-job-scheduler --job-id 1 -s $TERMUX_SCHEDULED/xmr_notifications --period-ms 900000
+termux-job-scheduler --job-id 2 -s $TERMUX_SCHEDULED/Update\ XMR\ Node --period-ms 86400000
+cd $MONERO_CLI
+termux-toast -g middle "Started XMR Node..."
+sleep 1
+./monerod --config-file $NODE_CONFIG/config.txt
+
+EOF
+
   cat << EOF > Start\ XMR\ Node
 #!/data/data/com.termux/files/usr/bin/sh
 termux-wake-lock
@@ -120,8 +133,8 @@ sleep 10
 cp $TERMUX_SHORTCUTS/Start\ XMR\ Node $TERMUX_BOOT
 termux-job-scheduler --job-id 1 -s $TERMUX_SCHEDULED/xmr_notifications --period-ms 900000
 termux-job-scheduler --job-id 2 -s $TERMUX_SCHEDULED/Update\ XMR\ Node --period-ms 86400000
-
-termux-toast -g "Started XMR Node..."
+sleep 1
+termux-toast -g middle "Started XMR Node..."
 EOF
 
  cat << EOF > Stop\ XMR\ Node
@@ -134,8 +147,8 @@ termux-wake-unlock
 termux-notification -i monero -c "🔴 XMR Node Offline" --priority low --alert-once
 termux-job-scheduler --cancel --job-id 1
 termux-job-scheduler --cancel --job-id 2
-
-termux-toast -g bottom "Stopped XMR Node"
+sleep 1
+termux-toast -g middle "Stopped XMR Node"
 
 EOF
 
@@ -144,14 +157,15 @@ EOF
 cd $MONERO_CLI
 ./monerod status
 sleep 3
-./moderod print_net_stats
-sleep 7
+./monerod print_net_stats
+sleep 5
 cd $TERMUX_SCHEDULED
 ./xmr_notifications
 EOF
 
  cat << "EOF" > xmr_notifications
 #!/data/data/com.termux/files/usr/bin/sh
+sleep 10
 REQ=$(curl -s http://127.0.0.1:18081/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_info"}' -H 'Content-Type: application/json')
 
 if [ "$REQ" ]
@@ -192,6 +206,7 @@ func_xmrnode_install(){
 	cd $NODE_CONFIG
 	wget -O block.txt https://gui.xmr.pm/files/block.txt
 	cd $TERMUX_SHORTCUTS
+	sleep 1
 	termux-toast -g bottom "Starting XMR Node.."
 	./Start\ XMR\ Node
 }
@@ -223,6 +238,7 @@ then
 		fi
 	else
 		VERSION=\$(echo \$DATA | jq '.version')
+		sleep 1
 		termux-toast -g bottom "No updates available. Current version is the latest: \$VERSION"
 	fi
 else
@@ -245,7 +261,7 @@ then
 	cd $TERMUX_SHORTCUTS
 	./Stop\ XMR\ Node
 
-	rm -f Start\ XMR\ Node
+	rm -f Start\ XMR\ Node*
 	rm -f Stop\ XMR\ Node
 	rm -f Update\ XMR\ Node
 	rm -f XMR\ Node\ Status
@@ -282,14 +298,14 @@ EOF
 
 
 # Finish Setting Up
-chmod +x Start\ XMR\ Node
+chmod +x Start\ XMR\ Node*
 chmod +x Stop\ XMR\ Node
 chmod +x Update\ XMR\ Node
 chmod +x XMR\ Node\ Status
 chmod +x xmr_notifications
 chmod +x Uninstall\ XMR\ Node 
 
-cp Start\ XMR\ Node $TERMUX_BOOT
+cp Start\ XMR\ Node  $TERMUX_BOOT
 mv xmr_notifications $TERMUX_SCHEDULED
 cp Update\ XMR\ Node $TERMUX_SCHEDULED
 
@@ -315,7 +331,7 @@ echo "		A couple things for you to do:"
 echo "1.  Add the Termux:Widget to your homescreen"
 echo "2.  If you'd like the node to run automatically on boot"
 echo "    make sure to install Termux:Boot from f-droid, and run it once."
-echo "3.  To set static IP to enable LAN access, go to:"
+echo "3.  To set a static IP to enable LAN access, go to:"
 echo "    android settings > wifi > edit saved network > advanced > DHCP"
 echo "    change from automatic to manual, and set the IP to:"
 echo "    $(termux-wifi-connectioninfo | jq '.ip')"
