@@ -45,7 +45,7 @@ pkg install nano wget termux-api jq -y
 
 # Pre-Clean Old Setup
 rm -f $TERMUX_BOOT/before_start_monero_node
-
+rm -f $TERMUX_BOOT/*XMR\ Node*
 
 # Create Directories
 mkdir -p $MONERO_CLI
@@ -323,7 +323,7 @@ then
 	rm -f XMR\ Node\ Status
 	rm -rf $MONERO_CLI
 	rm -f .Boot\ XMR\ Node
-	rm -f $TERMUX_BOOT/Boot\ XMR\ Node
+	rm -f $TERMUX_BOOT/*XMR\ Node*
 	cd $TERMUX_SCHEDULED
 	rm -f xmr_notifications
 	rm -f Update\ XMR\ Node
