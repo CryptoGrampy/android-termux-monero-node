@@ -59,8 +59,9 @@ mkdir -p $NODE_CONFIG
 # Download Blocklist
 cd $NODE_CONFIG
 wget -O block.txt https://gui.xmr.pm/files/block.txt
+
 # Create Monerod Config file
- cat << EOF > config.txt
+ cat << EOF > config.default
 # Data directory (blockchain db and indices)
 	data-dir=$NODE_DATA
 
@@ -86,7 +87,7 @@ wget -O block.txt https://gui.xmr.pm/files/block.txt
 # Unrestricted RPC binds
 	rpc-bind-ip=127.0.0.1         # Bind to local interface. Default = 127.0.0.1
 	rpc-bind-port=18081           # Default = 18081
-	#confirm-external-bind=1       # Open node (confirm). Required if binding outside of localhost  
+	#confirm-external-bind=1       # Open node (confirm). Required if binding outside of localhost
 	#restricted-rpc=1              # Prevent unsafe RPC calls.
 
   	no-zmq=1
@@ -107,41 +108,81 @@ wget -O block.txt https://gui.xmr.pm/files/block.txt
 	limit-rate-down=1048576   # 1048576 kB/s == 1GB/s; a raise from default 8192 kB/s; allow for faster initial sync
 EOF
 
+# Check for existing Config
+CONFIG=$(ls config.txt)
+if [ $CONFIG = config.txt ]
+then
+	DEL=$(termux-dialog radio -t "Existing configuration found" -v "Overwrite,Keep Existing" | jq '.text')
+	if [ "$DEL" != '"Overwrite"' ]
+	then
+	echo Keep Existing
+	fi
+	if [ "$DEL" = '"Overwrite"' ]
+	then
+	mv config.txt config.old
+	cp config.default config.txt
+	echo Overwriting config file.. Done.
+	fi
+else
+cp config.default config.txt
+echo Creating config file.. Done.
+fi
+
+
 # Create Scripts
 cd $TERMUX_SHORTCUTS
 
-  cat << EOF > Start\ XMR\ Node\ FG
+  cat << EOF > Start\ XMR\ Node
 #!/data/data/com.termux/files/usr/bin/sh
-termux-wake-lock
-cp $TERMUX_SHORTCUTS/Start\ XMR\ Node $TERMUX_BOOT
-termux-job-scheduler --job-id 1 -s $TERMUX_SCHEDULED/xmr_notifications --period-ms 900000
-termux-job-scheduler --job-id 2 -s $TERMUX_SCHEDULED/Update\ XMR\ Node --period-ms 86400000
-cd $MONERO_CLI
-termux-toast -g middle "Started XMR Node..."
-sleep 1
-./monerod --config-file $NODE_CONFIG/config.txt
+
+RESP=\$(termux-dialog radio -t "Run Node in:" -v "Background,Foreground" | jq '.text')
+	if [ \$RESP = '"Background"' ]
+	then
+	termux-wake-lock
+	cd $MONERO_CLI
+	./monerod --config-file $NODE_CONFIG/config.txt --detach
+	sleep 1
+	cp $TERMUX_SHORTCUTS/.Boot\ XMR\ Node $TERMUX_BOOT/Boot\ XMR\ Node
+	termux-job-scheduler --job-id 1 -s $TERMUX_SCHEDULED/xmr_notifications --period-ms 900000
+	termux-job-scheduler --job-id 2 -s $TERMUX_SCHEDULED/Update\ XMR\ Node --period-ms 86400000
+	sleep 1
+	termux-toast -g middle "Node Running in Background"
+	fi
+
+	if [ \$RESP = '"Foreground"' ]
+	then
+	termux-wake-lock
+	cp $TERMUX_SHORTCUTS/.Boot\ XMR\ Node $TERMUX_BOOT/Boot\ XMR\ Node
+	termux-job-scheduler --job-id 1 -s $TERMUX_SCHEDULED/xmr_notifications --period-ms 900000
+	termux-job-scheduler --job-id 2 -s $TERMUX_SCHEDULED/Update\ XMR\ Node --period-ms 86400000
+	cd $MONERO_CLI
+	termux-toast -g middle "Started XMR Node"
+	sleep 1
+	./monerod --config-file $NODE_CONFIG/config.txt
+fi
+exit 1
 
 EOF
 
-  cat << EOF > Start\ XMR\ Node
+
+  cat << EOF > .Boot\ XMR\ Node
 #!/data/data/com.termux/files/usr/bin/sh
 termux-wake-lock
 cd $MONERO_CLI
 ./monerod --config-file $NODE_CONFIG/config.txt --detach
 sleep 10
-
-cp $TERMUX_SHORTCUTS/Start\ XMR\ Node $TERMUX_BOOT
+cp $TERMUX_SHORTCUTS/.Boot\ XMR\ Node $TERMUX_BOOT/Boot\ XMR\ Node
 termux-job-scheduler --job-id 1 -s $TERMUX_SCHEDULED/xmr_notifications --period-ms 900000
 termux-job-scheduler --job-id 2 -s $TERMUX_SCHEDULED/Update\ XMR\ Node --period-ms 86400000
 sleep 1
-termux-toast -g middle "Started XMR Node..."
+termux-toast -g middle "Node Running in Background"
 EOF
 
  cat << EOF > Stop\ XMR\ Node
 #!/data/data/com.termux/files/usr/bin/sh
 cd $MONERO_CLI
-./monerod exit && tail --pid=\$(pidof monerod) -f /dev/null && echo 'Exited' 
-rm -f $TERMUX_BOOT/Start\ XMR\ Node
+./monerod exit && tail --pid=\$(pidof monerod) -f /dev/null && echo 'Exited'
+rm -f $TERMUX_BOOT/Boot\ XMR\ Node
 
 termux-wake-unlock
 termux-notification -i monero -c "🔴 XMR Node Offline" --priority low --alert-once
@@ -193,6 +234,7 @@ EOF
 
  cat << EOF > Update\ XMR\ Node
 #!/data/data/com.termux/files/usr/bin/sh
+sleep 10
 func_xmrnode_install(){
 	./Stop\ XMR\ Node && echo "Monero Node Stopped"
 	cd
@@ -249,7 +291,6 @@ fi
 EOF
 
 
-
  cat << EOF > Uninstall\ XMR\ Node
 #!/data/data/com.termux/files/usr/bin/bash
 RESP=\$(termux-dialog confirm -t "Uninstall XMR Node" -i "Do you wish to remove XMR node and all its associated files? (deleting the blockchain remains optional)" | jq '.text')
@@ -261,31 +302,29 @@ then
 	cd $TERMUX_SHORTCUTS
 	./Stop\ XMR\ Node
 
-	rm -f Start\ XMR\ Node*
+	rm -f Start\ XMR\ Node
 	rm -f Stop\ XMR\ Node
 	rm -f Update\ XMR\ Node
 	rm -f XMR\ Node\ Status
 	rm -rf $MONERO_CLI
-
+	rm -f .Boot\ XMR\ Node
+	rm -f $TERMUX_BOOT/Boot\ XMR\ Node
 	cd $TERMUX_SCHEDULED
 	rm -f xmr_notifications
 	rm -f Update\ XMR\ Node
 
 	cd $TERMUX_SHORTCUTS
-
-	RESP=\$(termux-dialog radio -t "Delete blockchain data?" -v "Yes,No" | jq '.index')
-
-	#0 = Uninstall
-	if [ \$RESP = 0 ]
+	RESP=\$(termux-dialog radio -t "Delete blockchain data?" -v "Yes,No" | jq '.text')
+	#'"Yes"' = Uninstall
+	if [ \$RESP = '"Yes"' ]
 	then
         echo "Deleting blockchain data"
 	rm -rf $NODE_DATA
         fi
 
-
-	RESP=\$(termux-dialog radio -t "Delete config file and uninstall script?" -v "Yes,No" | jq '.index')
-	#0 = Uninstall
-	if [ \$RESP = 0 ]
+	RESP=\$(termux-dialog radio -t "Delete config file and uninstall script?" -v "Yes,No" | jq '.text')
+	#'"Yes"' = Uninstall
+	if [ \$RESP = '"Yes"' ]
 	then
         echo "Deleting config file"
 	rm -rf $MONERO
@@ -298,14 +337,15 @@ EOF
 
 
 # Finish Setting Up
-chmod +x Start\ XMR\ Node*
+chmod +x Start\ XMR\ Node
 chmod +x Stop\ XMR\ Node
 chmod +x Update\ XMR\ Node
 chmod +x XMR\ Node\ Status
+chmod +x .Boot\ XMR\ Node
 chmod +x xmr_notifications
-chmod +x Uninstall\ XMR\ Node 
+chmod +x Uninstall\ XMR\ Node
 
-cp Start\ XMR\ Node  $TERMUX_BOOT
+cp .Boot\ XMR\ Node  $TERMUX_BOOT/Boot\ XMR\ Node
 mv xmr_notifications $TERMUX_SCHEDULED
 cp Update\ XMR\ Node $TERMUX_SCHEDULED
 
@@ -320,7 +360,7 @@ rm monero.tar.bzip2
 rm -rf $MONERO_CLI
 mv monero-a* $MONERO_CLI
 cd $TERMUX_SHORTCUTS
-./Start\ XMR\ Node
+./.Boot\ XMR\ Node
 
 echo "I'm Done! 👍."
 echo "..."
