@@ -221,7 +221,7 @@ EOF
 
  cat << "EOF" > xmr_notifications
 #!/data/data/com.termux/files/usr/bin/sh
-sleep 10
+sleep 30
 REQ=$(curl -s http://127.0.0.1:18081/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_info"}' -H 'Content-Type: application/json')
 
 if [ "$REQ" ]
@@ -249,7 +249,7 @@ EOF
 
  cat << EOF > Update\ XMR\ Node
 #!/data/data/com.termux/files/usr/bin/sh
-sleep 10
+sleep 30
 func_xmrnode_install(){
 	./Stop\ XMR\ Node && echo "Monero Node Stopped"
 	cd
