@@ -1,5 +1,5 @@
 # android-termux-monero-node
-Run a Full Monero Node on Android using Termux
+Run a Full or Pruned Monero Node on Android using Termux
 
 <center> 
 <figure>
