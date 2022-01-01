@@ -1,5 +1,5 @@
 # android-termux-monero-node
-Run a Full Monero Node on Android using Termux
+Run a Full or Pruned Monero Node on Android using Termux
 
 <center> 
 <figure>
@@ -25,7 +25,7 @@ Run a Full Monero Node on Android using Termux
 
 # Why
 
-The goal of this project is to give newbs a stupid-easy way to run an energy-efficient, full Monero node with decent defaults on an Android device.... ideally, this is a few year old device that's currently sitting in a drawer doing nothing.  Why not set it up as a Monero node that sits at your house all day or you toss in a bag for making ultra-secure Monero transactions on the go?  This code and install process isn't meant for power users, people with extreme use cases, etc. If you're already that smart, you should just hack up my code and use it however you like.
+The goal of this project is to give newbs a stupid-easy way to run an energy-efficient, full or pruned Monero node with decent defaults on an Android device.... ideally, this is a few year old device that's currently sitting in a drawer doing nothing.  Why not set it up as a Monero node that sits at your house all day or you toss in a bag for making ultra-secure Monero transactions on the go?  This code and install process isn't meant for power users, people with extreme use cases, etc. If you're already that smart, you should just hack up my code and use it however you like.
 
 Battery Life- 
 I'm running this on a phone that's plugged in most of the time, so I can't speak for battery life; I would assume that once you're fully synced, the battery usage will drop quite a bit. 
@@ -121,10 +121,6 @@ Video Install Guide (Use the code linked in this repo down below rather than the
 
   Make sure your screen stays 'on' throughout the install- give the screen a tap if necessary.
 
-  | Installed Node Type | Available Storage Required | Code you need to copy |
-  | --- | ----------- | --------|
-  | Full Monero Node on microSD  | microSD with 128+ (ideally 256GB) | [full-monero-node-install](src/full-monero-node-external-sd-install.sh) |
-
   Open Termux, and paste the copied code into the terminal. Press the return button on the on-screen keyboard. You will likely need to give Termux permission to do various things (add repos, etc) during the install.  Read what it's asking, type y and then press return. 
 
 6. SUCCESS!
@@ -137,7 +133,7 @@ The notifications will be automatically be updated every 15 minutes. The first n
 
 # Connecting to your Node / Seeding the Network
 
-There are a few ip addresses and ports you need to know when running a wallet on the Android device itself, when you're pointing ANOTHER device in your LOCAL network at your new full node, or when you're opening up your router to seed the network.
+There are a few ip addresses and ports you need to know when running a wallet on the Android device itself, when you're pointing ANOTHER device in your LOCAL network at your new full or pruned node, or when you're opening up your router to seed the network.
 
 ## Wallet Connections
 
@@ -186,13 +182,12 @@ Troubleshooting:
 
 # TODO's:
 
-- [ ] Add basic instructions for setting up a static IP for Android device
-- [ ] Ensure env variables can be altered safely (Monero-CLI directory definitely cannot currently)
-- [ ] Custom Configs
-- [ ] Check for external SD, if doesn't exist use different/symlinked install dir, check space before installing?/run as pruned
-- [ ] Secure RPC defaults
-- [x] Create Uninstaller
 - [x] Turn off notifications and boot wake locks when user turns node off/add them back when node is turned on
+- [x] Create Uninstaller
+- [x] Custom Configs
+- [x] Run as pruned
+- [ ] Check for external SD, if doesn't exist use different/symlinked install dir, check space before installing?
+- [ ] Secure RPC defaults
 
 # Donate:
 
