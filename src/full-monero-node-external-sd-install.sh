@@ -95,6 +95,8 @@ ASKSD=$(termux-dialog confirm -t "SD confirmation" -i "Are you using an SD card?
                         fi
 		else
 		echo "Not enough free space. \n$(df -h | tail -1 | awk '{print $4}') available\n45G required"
+		termux-wake-unlock
+		exit 1
 		fi
 	elif [ "$INTFREE" -gt '50000000' ]
 	then
@@ -107,10 +109,12 @@ ASKSD=$(termux-dialog confirm -t "SD confirmation" -i "Are you using an SD card?
         	echo Using Internal Storage
         	else
         	echo  give me no choice but to exit 🛸
-        	exit  1
+		termux-wake-unlock
+        	exit 1
         	fi
 	else
 	echo "Not enough free space. \n$(df -h | tail -1 | awk '{print $4}') available\n45G required"
+	termux-wake-unlock
 	exit 1
 	fi
 elif [ "$INTFREE" -gt '50000000' ]
@@ -124,10 +128,12 @@ CONFIRMINT=$(termux-dialog confirm -t "Internal Storage" -i \
 	echo Using Internal Storage
         else
         echo  give me no choice but to exit 🛸
+	termux-wake-unlock
         exit  1
         fi
 else
 echo "Not enough free space. \n$(df -h | tail -1 | awk '{print $4}') available\n45G required"
+termux-wake-unlock
 exit 1
 fi
 
@@ -439,7 +445,7 @@ then
 	then
         echo "Deleting config file"
 	rm -rf $NODE_CONFIG
-	rm -rf $MONERO
+	Rm -rf $MONERO
 	rm -rf Uninstall\ XMR\ Node
 	fi
 	exit 1
