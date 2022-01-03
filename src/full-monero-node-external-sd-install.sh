@@ -502,7 +502,8 @@ echo "		A couple things for you to do:
     $(termux-wifi-connectioninfo | jq '.ip')
 4b. To enable Wallet access from WAN:
 	  Also forward port 18089 to 18089
-5.  To make changes to the config file, use the command:
-    nano $NODE_CONFIG/config.txt
-         ☠️ Cheers ☠️ "
+5.  The config file is located on your internal storage at
+		crypto/monero-cli/config
+   
+      		     ☠️ Cheers ☠️ "
 )
