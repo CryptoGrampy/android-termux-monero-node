@@ -445,7 +445,7 @@ then
 	then
         echo "Deleting config file"
 	rm -rf $NODE_CONFIG
-	Rm -rf $MONERO
+	rm -rf $MONERO
 	rm -rf Uninstall\ XMR\ Node
 	fi
 	exit 1
