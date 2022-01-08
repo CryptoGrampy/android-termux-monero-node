@@ -59,7 +59,7 @@ rm -f $TERMUX_BOOT/*XMR\ Node*
 NODE_CONFIG_OLD=~/monero-cli/config
 if [ -d $NODE_CONFIG_OLD ]
 then
-mv -u $NODE_CONFIG_OLD/* $NODE_CONFIG/
+mv -u -n $NODE_CONFIG_OLD/* $NODE_CONFIG/
 rm -r $NODE_CONFIG_OLD
 fi
 
