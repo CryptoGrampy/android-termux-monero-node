@@ -56,31 +56,32 @@ mkdir -p $TERMUX_SCHEDULED
 # Pre-Clean Old Setup
 rm -f $TERMUX_BOOT/before_start_monero_node
 rm -f $TERMUX_BOOT/*XMR\ Node*
-NODE_CONFIGOLD=~/monero-cli/config
-if [ -d $NODE_CONFIGOLD ]
+NODE_CONFIG_OLD=~/monero-cli/config
+if [ -d $NODE_CONFIG_OLD ]
 then
-mv $NODE_CONFIGOLD/* $NODE_CONFIG/
-rm -r $NODE_CONFIGOLD
+mv -u $NODE_CONFIG_OLD/* $NODE_CONFIG/
+rm -r $NODE_CONFIG_OLD
 fi
 
+
+# Detect External Storage by checking for creation of Termux external-1 folder
 SD=~/storage/external-1
-INTFREE=$(df | tail -1 | awk '{print $4}')
+INTERNAL_FREE=$(df | tail -1 | awk '{print $4}')
 cd
-# Check creation of termux SD folder
 if [ -d $SD ]
 then
-ASKSD=$(termux-dialog confirm -t "SD confirmation" -i "Are you using an SD card?" | jq '.text')
-	if [ "$ASKSD" = '"yes"' ]
+CONFIRM_EXTERNAL=$(termux-dialog confirm -t "SD confirmation" -i "Are you using an SD card?" | jq '.text')
+	if [ "$CONFIRM_EXTERNAL" = '"yes"' ]
         then
         mkdir -p $SD_NODE
         NODE_DATA=$SD_NODE
         echo Using SD Card
 	elif [ -e $SD_NODE/lmdb/data.mdb ]
 	then
-	CHAIN=$(ls $SD_NODE/lmdb/data.mdb -l | awk '{print $5}')
-		if [ $INTFREE -gt $CHAIN ]
-                then MOVEDATA=$(termux-dialog radio -t "Existing data detected. Move?" -v "Move my data,Leave in place" | jq '.index')
-		        if  [ "$MOVEDATA" = '0' ]
+	BLOCKCHAIN=$(ls $SD_NODE/lmdb/data.mdb -l | awk '{print $5}')
+		if [ $INTERNAL_FREE -gt $BLOCKCHAIN ]
+                then MOVE_DATA=$(termux-dialog radio -t "Existing data detected. Move?" -v "Move my data,Leave in place" | jq '.index')
+		        if  [ "$MOVE_DATA" = '0' ]
                         then
       			mkdir -p $INTERNAL_NODE
                         cp -r $SD_NODE/* $INTERNAL_NODE/
@@ -98,11 +99,19 @@ ASKSD=$(termux-dialog confirm -t "SD confirmation" -i "Are you using an SD card?
 		termux-wake-unlock
 		exit 1
 		fi
-	elif [ "$INTFREE" -gt '50000000' ]
+	elif [ "$INTERNAL_FREE" -gt '50000000' ]
 	then
-	CONFIRMINT=$(termux-dialog confirm -t "Internal Storage" -i \
-	"Continue with Internal Storage?" | jq '.text')
-        	if [ "$CONFIRMINT" = '"yes"' ]
+	CONFIRM_INTERNAL=$(termux-dialog confirm -t "Internal Storage" -i \
+"                       •WARNING•
+
+All Flash Storage has a limited number of writes. This includes SD, SSD, and Internal Storage.
+
+Should the Node use all available write cycles, the storage - or this device - will be bricked.
+
+For this reason, external storage is recommended.
+
+Would you like to use INTERNAL Storage?" | jq '.text')
+        	if [ "$CONFIRM_INTERNAL" = '"yes"' ]
         	then
         	mkdir -p $INTERNAL_NODE
         	NODE_DATA=$INTERNAL_NODE
@@ -117,11 +126,19 @@ ASKSD=$(termux-dialog confirm -t "SD confirmation" -i "Are you using an SD card?
 	termux-wake-unlock
 	exit 1
 	fi
-elif [ "$INTFREE" -gt '50000000' ]
+elif [ "$INTERNAL_FREE" -gt '50000000' ]
 then
-CONFIRMINT=$(termux-dialog confirm -t "Internal Storage" -i \
-"Continue with Internal Storage?" | jq '.text')
-	if [ "$CONFIRMINT" = '"yes"' ]
+CONFIRM_INTERNAL=$(termux-dialog confirm -t "Internal Storage" -i \
+"                       •WARNING•
+
+All Flash Storage has a limited number of writes. This includes SD, SSD, and Internal Storage.
+
+Should the Node use all available write cycles, the storage - or this device - will be bricked.
+
+For this reason, external storage is recommended.
+
+Would you like to use INTERNAL Storage?" | jq '.text')
+	if [ "$CONFIRM_INTERNAL" = '"yes"' ]
 	then
         mkdir -p $INTERNAL_NODE
         NODE_DATA=$INTERNAL_NODE
@@ -229,7 +246,7 @@ PRUNE=$(termux-dialog radio -t "Run a" -v "Recommended - Full Node     (256gb pr
 	else
 	echo leaving as-is
 	fi
-elif [ "$INTFREE" -lt '150000000' ]
+elif [ "$INTERNAL_FREE" -lt '150000000' ]
 then
 sed -i 's/prune-blockchain=0/prune-blockchain=1/g' config.txt
 sed -i 's/#prune/prune/g' config.txt
@@ -486,24 +503,23 @@ sleep 1
 echo "But.."
 sleep 1
 echo "		A couple things for you to do:
-1.  Add the Termux:Widget to your homescreen
-2.  To run the node automatically @ boot:
-    Install Termux:Boot from f-droid and run it once.
-3.  To set a static IP to enable LAN access,
+1. Add the Termux:Widget to your homescreen
+2. To run the node automatically @ boot:
+    Install Termux:Boot from F-Droid and run it once.
+3. To set a static IP to enable LAN access:
     From Android Settings, go to:
-    wifi > edit saved network > advanced > DHCP
-    You need to change from "automatic" to "manual", and set the IP to:
+  - WiFi > edit saved network > advanced > DHCP
+  - You'll need to change from "automatic" to "manual", and set the IP to:
     $(termux-wifi-connectioninfo | jq '.ip')
-4.  To enable P2P seeding:
-    Go to your router settings (usually 192.168.0.1 in your browser)
-    Find "Port Forwarding",forward
+4. To enable P2P seeding:
+  - Go to your router settings (usually 192.168.0.1 in your browser)
+    Find "Port Forwarding",and forward
     "public/external" port 18080 to "internal/private" port 18080,
     Setting the "internal/private" ip to:
     $(termux-wifi-connectioninfo | jq '.ip')
 4b. To enable Wallet access from WAN:
-	  Also forward port 18089 to 18089
+      - Forward port 18089 to 18089
 5.  The config file is located on your internal storage at
-		crypto/monero-cli/config
-   
-      		     ☠️ Cheers ☠️ "
+       	crypto/monero-cli/config
+	      ☠️ Cheers ☠️ "
 )
