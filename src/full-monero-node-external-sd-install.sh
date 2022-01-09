@@ -41,17 +41,20 @@ then
 	exit 1
 fi
 
-termux-wake-lock -y
+termux-wake-lock
 pkg update -y
 pkg install nano wget termux-api jq -y
 
 # Create Directories
 
-mkdir -p $MONERO_CLI
+mkdir -p $MONERO
 mkdir -p $NODE_CONFIG
 mkdir -p $TERMUX_BOOT
 mkdir -p $TERMUX_SHORTCUTS
 mkdir -p $TERMUX_SCHEDULED
+cd $MONERO
+ln  -sfT $TERMUX_SHORTCUTS widget\ scripts
+
 
 # Pre-Clean Old Setup
 rm -f $TERMUX_BOOT/before_start_monero_node
