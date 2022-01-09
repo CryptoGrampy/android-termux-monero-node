@@ -353,8 +353,7 @@ REQ=$(curl -s http://127.0.0.1:18081/json_rpc -d '{"jsonrpc":"2.0","id":"0","met
 if [ "$REQ" ]
 then
 	DATA=$(echo $REQ | jq '.result')
-	START_TIME=$(echo "$DATA" | jq '.start_time' )
-	DATE=$(date -d @$START_TIME)
+	DATE=$(date -d @$(echo "$DATA" | jq '.start_time' ))
 	VERSION=$(echo "$DATA" | jq -r '.version' )
 	NODE_ONLINE=$(echo "$DATA" | jq -r 'if .offline == false then "🟢 XMR Node Online" else "🔴 XMR Node Offline" end')
 	OUTGOING_CONNECTIONS=$(echo "$DATA" | jq '.outgoing_connections_count' )
@@ -506,7 +505,9 @@ echo "I'm Done! 👍.
 sleep 1
 echo "But.."
 sleep 1
-echo "		A couple things for you to do:
+echo "	
+	A couple things for you to do:
+
 1. Add the Termux:Widget to your homescreen
 2. To run the node automatically @ boot:
     Install Termux:Boot from F-Droid and run it once.
