@@ -129,7 +129,7 @@ Would you like to use INTERNAL Storage?" | jq '.text')
 	termux-wake-unlock
 	exit 1
 	fi
-elif [ "$INTERNAL_FREE" -gt '50000000' ]
+elif [ "$INTERNAL_FREE" -gt '50000000' ] || [ -e $INTERNAL_NODE/lmdb/data.mdb ]
 then
 CONFIRM_INTERNAL=$(termux-dialog confirm -t "Internal Storage" -i \
 "                       •WARNING•
@@ -302,7 +302,7 @@ RESP=\$(termux-dialog radio -t "Run Node in:" -v "Background,Foreground" | jq '.
 	sleep 1
 	./monerod --config-file $NODE_CONFIG/config.txt
 fi
-exit 1
+exit 0
 
 EOF
 
@@ -312,7 +312,7 @@ EOF
 termux-wake-lock
 cd $MONERO_CLI
 ./monerod --config-file $NODE_CONFIG/config.txt --detach
-sleep 10
+sleep 5
 cp $TERMUX_SHORTCUTS/.Boot\ XMR\ Node $TERMUX_BOOT/Boot\ XMR\ Node
 termux-job-scheduler --job-id 1 -s $TERMUX_SCHEDULED/xmr_notifications --period-ms 900000
 termux-job-scheduler --job-id 2 -s $TERMUX_SCHEDULED/Update\ XMR\ Node --period-ms 86400000
@@ -347,7 +347,7 @@ EOF
 
  cat << "EOF" > xmr_notifications
 #!/data/data/com.termux/files/usr/bin/sh
-sleep 30
+sleep 5
 REQ=$(curl -s http://127.0.0.1:18081/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_info"}' -H 'Content-Type: application/json')
 
 if [ "$REQ" ]
@@ -369,13 +369,13 @@ else
 	NODE_ONLINE="🔴 XMR Node Offline!"
 	NOTIFICATION="RPC Error: Turn on your Node!"
 fi
-termux-notification -i monero -c "$NOTIFICATION"  -t "$NODE_ONLINE" --ongoing --priority low --alert-once
+termux-notification -i monero -c "$NOTIFICATION" -t "$NODE_ONLINE" --ongoing --priority low --alert-once --button1 DISCONNECT --button1-action 'monero-cli/monero-cli/monerod exit | termux-wake-unlock | termux-job-scheduler --cancel --job-id 1 | termux-job-scheduler --cancel --job-id 2 | termux-toast -g middle "Stopped XMR Node" | rm .termux/boot/Boot\ XMR\ Node | termux-notification -i monero -c "🔴 XMR Node Offline" --priority low' --button2 "refresh node status" --button2-action 'bash -l -c termux-scheduled/xmr_notifications'
 EOF
 
 
  cat << EOF > Update\ XMR\ Node
 #!/data/data/com.termux/files/usr/bin/sh
-sleep 30
+sleep 5
 func_xmrnode_install(){
 	./Stop\ XMR\ Node && echo "Monero Node Stopped"
 	cd
