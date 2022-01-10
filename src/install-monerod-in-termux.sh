@@ -369,7 +369,7 @@ else
 	NODE_ONLINE="🔴 XMR Node Offline!"
 	NOTIFICATION="RPC Error: Turn on your Node!"
 fi
-termux-notification -i monero -c "$NOTIFICATION" -t "$NODE_ONLINE" --ongoing --priority low --alert-once --button1 DISCONNECT --button1-action 'monero-cli/monero-cli/monerod exit | termux-wake-unlock | termux-job-scheduler --cancel --job-id 1 | termux-job-scheduler --cancel --job-id 2 | termux-toast -g middle "Stopped XMR Node" | rm .termux/boot/Boot\ XMR\ Node | termux-notification -i monero -c "🔴 XMR Node Offline" --priority low' --button2 "refresh node status" --button2-action 'bash -l -c termux-scheduled/xmr_notifications'
+termux-notification -i monero -c "$NOTIFICATION" -t "$NODE_ONLINE" --ongoing --priority low --alert-once --button1 DISCONNECT --button1-action 'monero-cli/monero-cli/monerod exit | termux-wake-unlock | termux-job-scheduler --cancel --job-id 1 | termux-job-scheduler --cancel --job-id 2 | termux-toast -g middle "Stopped XMR Node" | rm .termux/boot/Boot\ XMR\ Node | termux-notification -i monero -c "🔴 XMR Node Offline" --priority low' --button2 "REFRESH NODE STATUS" --button2-action 'bash -l -c termux-scheduled/xmr_notifications'
 EOF
 
 
