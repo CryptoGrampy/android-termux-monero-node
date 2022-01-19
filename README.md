@@ -186,7 +186,7 @@ Troubleshooting:
 - [x] Create Uninstaller
 - [x] Custom Configs
 - [x] Run as pruned
-- [ ] Check for external SD, if doesn't exist use different/symlinked install dir, check space before installing?
+- [x] Check for external SD, if doesn't exist use different/symlinked install dir, check space before installing?
 - [ ] Secure RPC defaults
 
 # Donate:
