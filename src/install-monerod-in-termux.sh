@@ -3,8 +3,9 @@
 (
 MONERO=~/monero-cli
 MONERO_CLI=~/monero-cli/monero-cli
-NODE_DATA=~/storage/external-1/bitmonero
-NODE_CONFIG=~/monero-cli/config
+NODE_CONFIG=~/storage/shared/crypto/monero-cli/config
+INTERNAL_NODE=~/storage/shared/crypto/monero-cli/blockchain
+SD_NODE=~/storage/external-1/bitmonero
 TERMUX_BOOT=~/.termux/boot
 TERMUX_SHORTCUTS=~/.shortcuts
 TERMUX_SCHEDULED=~/termux-scheduled
@@ -31,7 +32,8 @@ Make sure you have these apps installed (via F-Droid) before proceeding:
 
 	- Termux Widget
 	- Termux API
- 	- Termux Boot (optional. required for start-on-boot)
+ 	- Termux Boot (optional.
+ 	  Required for start-on-boot)
 
 Are you ready to continue?" | jq '.text')
 if [ "$RESP" = '"no"' ]
@@ -39,27 +41,128 @@ then
 	exit 1
 fi
 
-termux-wake-lock -y
+termux-wake-lock
 pkg update -y
 pkg install nano wget termux-api jq -y
+
+# Create Directories
+
+mkdir -p $MONERO
+mkdir -p $NODE_CONFIG
+mkdir -p $TERMUX_BOOT
+mkdir -p $TERMUX_SHORTCUTS
+mkdir -p $TERMUX_SCHEDULED
+cd $MONERO
+ln  -sfT $TERMUX_SHORTCUTS widget\ scripts
+
 
 # Pre-Clean Old Setup
 rm -f $TERMUX_BOOT/before_start_monero_node
 rm -f $TERMUX_BOOT/*XMR\ Node*
-
-# Create Directories
-mkdir -p $MONERO_CLI
-mkdir -p $NODE_DATA
-mkdir -p $TERMUX_BOOT
-mkdir -p $TERMUX_SHORTCUTS
-mkdir -p $TERMUX_SCHEDULED
-mkdir -p $NODE_CONFIG
+NODE_CONFIG_OLD=~/monero-cli/config
+if [ -d $NODE_CONFIG_OLD ]
+then
+mv -u -n $NODE_CONFIG_OLD/* $NODE_CONFIG/
+rm -r $NODE_CONFIG_OLD
+fi
 
 
-# Download Blocklist (disabled)
+# Detect External Storage by checking for creation of Termux external-1 folder
+SD=~/storage/external-1
+INTERNAL_FREE=$(df | tail -1 | awk '{print $4}')
+cd
+if [ -d $SD ]
+then
+CONFIRM_EXTERNAL=$(termux-dialog confirm -t "SD confirmation" -i "Are you using an SD card?" | jq '.text')
+	if [ "$CONFIRM_EXTERNAL" = '"yes"' ]
+        then
+        mkdir -p $SD_NODE
+        NODE_DATA=$SD_NODE
+        echo Using SD Card
+	elif [ -e $SD_NODE/lmdb/data.mdb ]
+	then
+	BLOCKCHAIN=$(ls $SD_NODE/lmdb/data.mdb -l | awk '{print $5}')
+		if [ $INTERNAL_FREE -gt $BLOCKCHAIN ]
+                then MOVE_DATA=$(termux-dialog radio -t "Existing data detected. Move?" -v "Move my data,Leave in place" | jq '.index')
+		        if  [ "$MOVE_DATA" = '0' ]
+                        then
+      			mkdir -p $INTERNAL_NODE
+                        cp -r $SD_NODE/* $INTERNAL_NODE/
+                        rm -r $SD_NODE/
+                        echo Moving Blockchain to Internal Storage
+                        NODE_DATA=$INTERNAL_NODE
+                        sleep 1
+                        else
+                        echo Leaving in place
+                        NODE_DATA=$SD_NODE
+                        sleep 1
+                        fi
+		else
+		echo "Not enough free space. \n$(df -h | tail -1 | awk '{print $4}') available\n45G required"
+		termux-wake-unlock
+		exit 1
+		fi
+	elif [ "$INTERNAL_FREE" -gt '50000000' ]
+	then
+	CONFIRM_INTERNAL=$(termux-dialog confirm -t "Internal Storage" -i \
+"                       •WARNING•
+
+All Flash Storage has a limited number of writes. This includes SD, SSD, and Internal Storage.
+
+Should the Node use all available write cycles, the storage - or this device - will be bricked.
+
+For this reason, external storage is recommended.
+
+Would you like to use INTERNAL Storage?" | jq '.text')
+        	if [ "$CONFIRM_INTERNAL" = '"yes"' ]
+        	then
+        	mkdir -p $INTERNAL_NODE
+        	NODE_DATA=$INTERNAL_NODE
+        	echo Using Internal Storage
+        	else
+        	echo  give me no choice but to exit 🛸
+		termux-wake-unlock
+        	exit 1
+        	fi
+	else
+	echo "Not enough free space. \n$(df -h | tail -1 | awk '{print $4}') available\n45G required"
+	termux-wake-unlock
+	exit 1
+	fi
+elif [ "$INTERNAL_FREE" -gt '50000000' ] || [ -e $INTERNAL_NODE/lmdb/data.mdb ]
+then
+CONFIRM_INTERNAL=$(termux-dialog confirm -t "Internal Storage" -i \
+"                       •WARNING•
+
+All Flash Storage has a limited number of writes. This includes SD, SSD, and Internal Storage.
+
+Should the Node use all available write cycles, the storage - or this device - will be bricked.
+
+For this reason, external storage is recommended.
+
+Would you like to use INTERNAL Storage?" | jq '.text')
+	if [ "$CONFIRM_INTERNAL" = '"yes"' ]
+	then
+        mkdir -p $INTERNAL_NODE
+        NODE_DATA=$INTERNAL_NODE
+	echo Using Internal Storage
+        else
+        echo  give me no choice but to exit 🛸
+	termux-wake-unlock
+        exit  1
+        fi
+else
+echo "Not enough free space. \n$(df -h | tail -1 | awk '{print $4}') available\n45G required"
+termux-wake-unlock
+exit 1
+fi
+
+# Create Sym links to blockchain data and config
+cd $MONERO
+ln -sf $NODE_DATA -T blockchain
+ln -sf $NODE_CONFIG -T config
+
 cd $NODE_CONFIG
-# wget -O block.txt https://gui.xmr.pm/files/block.txt
-
 # Create Monerod Config file
  cat << EOF > config.default
 # Data directory (blockchain db and indices)
@@ -73,7 +176,7 @@ cd $NODE_CONFIG
 	#ban-list=$NODE_CONFIG/block.txt
 
 # block-sync-size=50
-	prune-blockchain=0             #Uncomment to prune
+	prune-blockchain=1             # 1 to prune
 
 # P2P (seeding) binds
 	p2p-bind-ip=0.0.0.0          # Bind to all interfaces. Default is local 127.0.0.1
@@ -89,7 +192,6 @@ cd $NODE_CONFIG
 	rpc-bind-port=18081           # Default = 18081
 	#confirm-external-bind=1       # Open node (confirm). Required if binding outside of localhost
 	#restricted-rpc=1              # Prevent unsafe RPC calls.
-
   	no-zmq=1
 	no-igd=1                         # Disable UPnP port mapping
 	db-sync-mode=safe                # Slow but reliable db writes
@@ -109,16 +211,18 @@ cd $NODE_CONFIG
 EOF
 
 # Check for existing Config
-CONFIG=$(ls config.txt)
-if [ $CONFIG = config.txt ]
+if [ -e config.txt ]
 then
-	DEL=$(termux-dialog radio -t "Existing configuration found" -v "Overwrite,Keep Existing" | jq '.text')
-	if [ "$DEL" != '"Overwrite"' ]
+	DEL=$(termux-dialog radio -t "Existing configuration found" -v "Update,Keep Existing" | jq '.text')
+	if [ "$DEL" != '"Update"' ]
 	then
-	echo Keep Existing
-	fi
-	if [ "$DEL" = '"Overwrite"' ]
-	then
+	echo "Keep existing config file.\n   Updating data-dir flag"
+	cp config.txt config.old
+	sleep 2
+	sed -i "s|$SD_NODE|$NODE_DATA|g" config.txt
+	sed -i "s|$INTERNAL_NODE|$NODE_DATA|g" config.txt
+	sed -i -z "s|data-dir=\n|data-dir=$NODE_DATA\n|g" config.txt
+	else
 	mv config.txt config.old
 	cp config.default config.txt
 	echo Overwriting config file.. Done.
@@ -129,6 +233,8 @@ echo Creating config file.. Done.
 fi
 
 # Prompt to Enable Pruning
+if [ "$NODE_DATA" = "$SD_NODE" ]
+then
 PRUNE=$(termux-dialog radio -t "Run a" -v "Recommended - Full Node     (256gb preferred),Low Storage - Pruned Node     (64gb  minimum)" | jq '.text')
 	if [ "$PRUNE" = '"Low Storage - Pruned Node     (64gb  minimum)"' ]
 	then
@@ -141,8 +247,29 @@ PRUNE=$(termux-dialog radio -t "Run a" -v "Recommended - Full Node     (256gb pr
 	sed -i 's/#prune/prune/g' config.txt
 	echo Running Full Node 🎉
 	else
-	echo Not touching
+	echo leaving as-is
 	fi
+elif [ "$INTERNAL_FREE" -lt '150000000' ]
+then
+sed -i 's/prune-blockchain=0/prune-blockchain=1/g' config.txt
+sed -i 's/#prune/prune/g' config.txt
+echo Running Pruned
+else
+PRUNE=$(termux-dialog radio -t "Run a" -v "Recommended - Full Node     (256gb preferred),Low Storage - Pruned Node     (64gb  minimum)" | jq '.text')
+	if [ "$PRUNE" = '"Low Storage - Pruned Node     (64gb  minimum)"' ]
+	then
+	sed -i 's/prune-blockchain=0/prune-blockchain=1/g' config.txt
+	sed -i 's/#prune/prune/g' config.txt
+	echo Running Pruned
+	elif [ "$PRUNE" = '"Recommended - Full Node     (256gb preferred)"' ]
+	then
+	sed -i 's/prune-blockchain=1/prune-blockchain=0/g' config.txt
+	sed -i 's/#prune/prune/g' config.txt
+	echo Running Full Node 🎉
+	else
+	echo leaving as-is
+	fi
+fi
 
 # Create Scripts
 cd $TERMUX_SHORTCUTS
@@ -175,7 +302,7 @@ RESP=\$(termux-dialog radio -t "Run Node in:" -v "Background,Foreground" | jq '.
 	sleep 1
 	./monerod --config-file $NODE_CONFIG/config.txt
 fi
-exit 1
+exit 0
 
 EOF
 
@@ -185,7 +312,7 @@ EOF
 termux-wake-lock
 cd $MONERO_CLI
 ./monerod --config-file $NODE_CONFIG/config.txt --detach
-sleep 10
+sleep 5
 cp $TERMUX_SHORTCUTS/.Boot\ XMR\ Node $TERMUX_BOOT/Boot\ XMR\ Node
 termux-job-scheduler --job-id 1 -s $TERMUX_SCHEDULED/xmr_notifications --period-ms 900000
 termux-job-scheduler --job-id 2 -s $TERMUX_SCHEDULED/Update\ XMR\ Node --period-ms 86400000
@@ -211,9 +338,8 @@ EOF
  cat << EOF > XMR\ Node\ Status
 #!/data/data/com.termux/files/usr/bin/sh
 cd $MONERO_CLI
-./monerod status
-sleep 3
 ./monerod print_net_stats
+./monerod status
 sleep 5
 cd $TERMUX_SCHEDULED
 ./xmr_notifications
@@ -221,13 +347,13 @@ EOF
 
  cat << "EOF" > xmr_notifications
 #!/data/data/com.termux/files/usr/bin/sh
-sleep 30
+sleep 5
 REQ=$(curl -s http://127.0.0.1:18081/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_info"}' -H 'Content-Type: application/json')
 
 if [ "$REQ" ]
 then
 	DATA=$(echo $REQ | jq '.result')
-	DATE=$(echo "$DATA" | jq '.start_time' | jq -r 'todate' )
+	DATE=$(date -d @$(echo "$DATA" | jq '.start_time' ))
 	VERSION=$(echo "$DATA" | jq -r '.version' )
 	NODE_ONLINE=$(echo "$DATA" | jq -r 'if .offline == false then "🟢 XMR Node Online" else "🔴 XMR Node Offline" end')
 	OUTGOING_CONNECTIONS=$(echo "$DATA" | jq '.outgoing_connections_count' )
@@ -243,13 +369,13 @@ else
 	NODE_ONLINE="🔴 XMR Node Offline!"
 	NOTIFICATION="RPC Error: Turn on your Node!"
 fi
-termux-notification -i monero -c "$NOTIFICATION"  -t "$NODE_ONLINE" --ongoing --priority low --alert-once
+termux-notification -i monero -c "$NOTIFICATION" -t "$NODE_ONLINE" --ongoing --priority low --alert-once --button1 DISCONNECT --button1-action 'monero-cli/monero-cli/monerod exit | termux-wake-unlock | termux-job-scheduler --cancel --job-id 1 | termux-job-scheduler --cancel --job-id 2 | termux-toast -g middle "Stopped XMR Node" | rm .termux/boot/Boot\ XMR\ Node | termux-notification -i monero -c "🔴 XMR Node Offline" --priority low' --button2 "REFRESH NODE STATUS" --button2-action 'bash -l -c termux-scheduled/xmr_notifications'
 EOF
 
 
  cat << EOF > Update\ XMR\ Node
 #!/data/data/com.termux/files/usr/bin/sh
-sleep 30
+sleep 5
 func_xmrnode_install(){
 	./Stop\ XMR\ Node && echo "Monero Node Stopped"
 	cd
@@ -258,10 +384,6 @@ func_xmrnode_install(){
 	rm monero.tar.bzip2
 	rm -rf $MONERO_CLI
 	mv monero-a* $MONERO_CLI
-
-        # Download Blocklist
-	cd $NODE_CONFIG
-	wget -O block.txt https://gui.xmr.pm/files/block.txt
 	cd $TERMUX_SHORTCUTS
 	sleep 1
 	termux-toast -g bottom "Starting XMR Node.."
@@ -329,19 +451,20 @@ then
 	rm -f Update\ XMR\ Node
 
 	cd $TERMUX_SHORTCUTS
-	RESP=\$(termux-dialog radio -t "Delete blockchain data?" -v "Yes,No" | jq '.text')
+	RESP=\$(termux-dialog radio -t "Delete Blockchain?" -v "Yes,Skip" | jq '.text')
 	#'"Yes"' = Uninstall
 	if [ \$RESP = '"Yes"' ]
 	then
-        echo "Deleting blockchain data"
+        echo "Deleting Blockchain"
 	rm -rf $NODE_DATA
         fi
 
-	RESP=\$(termux-dialog radio -t "Delete config file and uninstall script?" -v "Yes,No" | jq '.text')
+	RESP=\$(termux-dialog radio -t "Tidy up? (Remove Config file, Uninstall Script and Termux' Monero folder)" -v "Yes,Skip" | jq '.text')
 	#'"Yes"' = Uninstall
 	if [ \$RESP = '"Yes"' ]
 	then
         echo "Deleting config file"
+	rm -rf $NODE_CONFIG
 	rm -rf $MONERO
 	rm -rf Uninstall\ XMR\ Node
 	fi
@@ -377,28 +500,31 @@ mv monero-a* $MONERO_CLI
 cd $TERMUX_SHORTCUTS
 ./.Boot\ XMR\ Node
 
-echo "I'm Done! 👍."
-echo "..."
+echo "I'm Done! 👍.
+..."
 sleep 1
 echo "But.."
 sleep 1
-echo "		A couple things for you to do:"
-echo "1.  Add the Termux:Widget to your homescreen"
-echo "2.  If you'd like the node to run automatically on boot"
-echo "    make sure to install Termux:Boot from f-droid, and run it once."
-echo "3.  To set a static IP to enable LAN access, go to:"
-echo "    android settings > wifi > edit saved network > advanced > DHCP"
-echo "    change from automatic to manual, and set the IP to:"
-echo "    $(termux-wifi-connectioninfo | jq '.ip')"
-echo "4.  To enable P2P seeding:"
-echo "    Go to your router settings (usually 192.168.0.1 in your browser)"
-echo "    Find 'Port Forwarding', then forward"
-echo "    public/external port 18080 to internal/private port 18080,"
-echo "    setting the internal ip to:"
-echo "    $(termux-wifi-connectioninfo | jq '.ip')"
-echo "4b. To enable Wallet access from WAN:"
-echo "	  Also forward port 18089 to 18089 as well"
-echo "5.  To make changes to the config file, use the command:"
-echo "    nano $NODE_CONFIG/config.txt"
-echo "         ☠️ Cheers ☠️ "
+echo "	
+	A couple things for you to do:
+
+1. Add the Termux:Widget to your homescreen
+2. To run the node automatically @ boot:
+    Install Termux:Boot from F-Droid and run it once.
+3. To set a static IP to enable LAN access:
+    From Android Settings, go to:
+  - WiFi > edit saved network > advanced > DHCP
+  - You'll need to change from "automatic" to "manual", and set the IP to:
+    $(termux-wifi-connectioninfo | jq '.ip')
+4. To enable P2P seeding:
+  - Go to your router settings (usually 192.168.0.1 in your browser)
+    Find "Port Forwarding",and forward
+    "public/external" port 18080 to "internal/private" port 18080,
+    Setting the "internal/private" ip to:
+    $(termux-wifi-connectioninfo | jq '.ip')
+4b. To enable Wallet access from WAN:
+      - Forward port 18089 to 18089
+5.  The config file is located on your internal storage at
+       	crypto/monero-cli/config
+	      ☠️ Cheers ☠️ "
 )
