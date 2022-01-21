@@ -112,7 +112,7 @@ Video Install Guide (Use the code linked in this repo down below rather than the
 
   Quick Install- Copy and paste this into Termux, and press Enter
   ```bash
-  sh -c "$(curl -fsSL https://raw.githubusercontent.com/CryptoGrampy/android-termux-monero-node/main/src/full-monero-node-external-sd-install.sh)" 
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/CryptoGrampy/android-termux-monero-node/main/src/install-monerod-in-termux.sh)" 
   ```
 
   Elaborate Install:
@@ -186,7 +186,7 @@ Troubleshooting:
 - [x] Create Uninstaller
 - [x] Custom Configs
 - [x] Run as pruned
-- [ ] Check for external SD, if doesn't exist use different/symlinked install dir, check space before installing?
+- [x] Check for external SD, if doesn't exist use different/symlinked install dir, check space before installing?
 - [ ] Secure RPC defaults
 
 # Donate:
