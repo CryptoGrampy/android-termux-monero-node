@@ -23,7 +23,17 @@ esac
 
 
 # Preconfigure
+if [ -d $HOME/storage/downloads ]
+then
+echo Storage already configured. Skipping.
+else
 termux-setup-storage
+fi
+
+pkg upgrade -y
+apt install nano wget termux-api jq -y
+apt autoremove -y
+apt autoclean
 
 RESP=$(termux-dialog confirm -t "XMR Node" -i \
 "This script will install the latest Monero Node software on your device
@@ -43,8 +53,6 @@ fi
 
 termux-wake-lock
 sleep 1
-pkg update -y
-pkg install nano wget termux-api jq -y
 
 # Create Directories
 
@@ -171,17 +179,17 @@ cd $NODE_CONFIG
 
 # Log file
 	log-file=/dev/null
-	max-log-file-size=0       # Prevent monerod from creating log files
+	max-log-file-size=0           # Prevent monerod from creating log files
 
 #Peer ban list
 	#ban-list=$NODE_CONFIG/block.txt
 
 # block-sync-size=50
-	prune-blockchain=1             # 1 to prune
+	prune-blockchain=1            # 1 to prune
 
 # P2P (seeding) binds
-	p2p-bind-ip=0.0.0.0          # Bind to all interfaces. Default is local 127.0.0.1
-	p2p-bind-port=18080          # Bind to default port
+	p2p-bind-ip=0.0.0.0           # Bind to all interfaces. Default is local 127.0.0.1
+	p2p-bind-port=18080           # Bind to default port
 
 # Restricted RPC binds (allow restricted access)
 # Uncomment below for access to the node from LAN/WAN. May require port forwarding for WAN access
@@ -191,14 +199,14 @@ cd $NODE_CONFIG
 # Unrestricted RPC binds
 	rpc-bind-ip=127.0.0.1         # Bind to local interface. Default = 127.0.0.1
 	rpc-bind-port=18081           # Default = 18081
-	#confirm-external-bind=1       # Open node (confirm). Required if binding outside of localhost
-	#restricted-rpc=1              # Prevent unsafe RPC calls.
+	#confirm-external-bind=1      # Open node (confirm). Required if binding outside of localhost
+	#restricted-rpc=1             # Prevent unsafe RPC calls.
 
 # Services
 	rpc-ssl=autodetect
   	no-zmq=1
-	no-igd=1                         # Disable UPnP port mapping
-	db-sync-mode=safe                # Slow but reliable db writes
+	no-igd=1                            # Disable UPnP port mapping
+	db-sync-mode=fast:async:1000000     # Switch to db-sync-mode=safe for slow but more reliable db writes
 
 # Emergency checkpoints set by MoneroPulse operators will be enforced to workaround potential consensus bugs
 # Check https://monerodocs.org/infrastructure/monero-pulse/ for explanation and trade-offs
@@ -209,7 +217,7 @@ cd $NODE_CONFIG
 
 # Connection Limits
 	out-peers=32              # This will enable much faster sync and tx awareness; the default 8 is suboptimal nowadays
-	in-peers=32            # The default is unlimited; we prefer to put a cap on this
+	in-peers=32               # The default is unlimited; we prefer to put a cap on this
 	limit-rate-up=1048576     # 1048576 kB/s == 1GB/s; a raise from default 2048 kB/s; contribute more to p2p network
 	limit-rate-down=1048576   # 1048576 kB/s == 1GB/s; a raise from default 8192 kB/s; allow for faster initial sync
 EOF
