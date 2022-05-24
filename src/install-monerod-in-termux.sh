@@ -107,7 +107,7 @@ CONFIRM_EXTERNAL=$(termux-dialog confirm -t "SD confirmation" -i "Are you using 
                         sleep 1
                         fi
 		else
-		echo "Not enough free space. \n$(df -h | tail -1 | awk '{print $4}') available\n45G required"
+		echo "Not enough free space. \n$(df -h | tail -1 | awk '{print $4}')B available\n50GB required"
 		termux-wake-unlock
 		exit 1
 		fi
@@ -134,7 +134,7 @@ Would you like to use INTERNAL Storage?" | jq '.text')
         	exit 1
         	fi
 	else
-	echo "Not enough free space. \n$(df -h | tail -1 | awk '{print $4}') available\n45G required"
+	echo "Not enough free space. \n$(df -h | tail -1 | awk '{print $4}')B available\n50GB required"
 	termux-wake-unlock
 	exit 1
 	fi
@@ -161,7 +161,7 @@ Would you like to use INTERNAL Storage?" | jq '.text')
         exit  1
         fi
 else
-echo "Not enough free space. \n$(df -h | tail -1 | awk '{print $4}') available\n45G required"
+echo "Not enough free space. \n$(df -h | tail -1 | awk '{print $4}')B available\n50GB required"
 termux-wake-unlock
 exit 1
 fi
